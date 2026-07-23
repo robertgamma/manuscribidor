@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,79 +9,188 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Gloria+Hallelujah&family=Shadows+Into+Light&family=Kalam:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Gloria+Hallelujah&family=Shadows+Into+Light&family=Kalam:wght@400;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <style>
-        body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 7px; height: 7px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
         .page-container {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
-            background: white; cursor: crosshair;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+            background: white;
+            cursor: crosshair;
             transition: transform 0.2s ease;
         }
-        .page-container:hover { transform: scale(1.005); }
-        .toolbar-btn {
-            padding: 4px 8px; font-size: 11px; font-weight: 600;
-            color: #4f46e5; background: #e0e7ff; border-radius: 6px;
-            cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+
+        .page-container:hover {
+            transform: scale(1.005);
         }
-        .toolbar-btn:hover { background: #c7d2fe; border-color: #a5b4fc; }
+
+        .toolbar-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4f46e5;
+            background: #e0e7ff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .toolbar-btn:hover {
+            background: #c7d2fe;
+            border-color: #a5b4fc;
+        }
 
         /* Editor flotante para edición WYSIWYG */
         #edit-overlay {
-            position: fixed; display: none; z-index: 100;
-            background: rgba(255,255,255,0.98);
-            border: 2px solid #6366f1; border-radius: 10px;
+            position: fixed;
+            display: none;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid #6366f1;
+            border-radius: 10px;
             padding: 10px 14px;
-            box-shadow: 0 8px 30px rgba(99,102,241,0.25), 0 2px 8px rgba(0,0,0,0.15);
-            min-width: 240px; max-width: 420px;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+            min-width: 240px;
+            max-width: 420px;
         }
+
         #edit-overlay label {
-            display: block; font-size: 10px; font-weight: 700;
-            color: #6366f1; text-transform: uppercase; letter-spacing: 0.05em;
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-bottom: 6px;
         }
+
         #edit-input {
-            width: 100%; font-family: monospace; font-size: 14px;
-            color: #1e293b; background: #f8fafc;
-            border: 1px solid #cbd5e1; border-radius: 6px;
-            padding: 6px 8px; outline: none; box-sizing: border-box;
+            width: 100%;
+            font-family: monospace;
+            font-size: 14px;
+            color: #1e293b;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px 8px;
+            outline: none;
+            box-sizing: border-box;
             transition: border-color 0.2s;
         }
-        #edit-input:focus { border-color: #6366f1; }
-        #edit-actions { display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end; }
-        .edit-btn {
-            padding: 4px 14px; border-radius: 6px; font-size: 12px;
-            font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
+
+        #edit-input:focus {
+            border-color: #6366f1;
         }
-        .edit-btn-confirm { background: #6366f1; color: white; }
-        .edit-btn-confirm:hover { background: #4f46e5; }
-        .edit-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
-        .edit-btn-cancel:hover { background: #e2e8f0; }
+
+        #edit-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            justify-content: flex-end;
+        }
+
+        .edit-btn {
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .edit-btn-confirm {
+            background: #6366f1;
+            color: white;
+        }
+
+        .edit-btn-confirm:hover {
+            background: #4f46e5;
+        }
+
+        .edit-btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .edit-btn-cancel:hover {
+            background: #e2e8f0;
+        }
 
         /* Selector de modo */
         .mode-btn {
-            flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 700;
-            border-radius: 6px; cursor: pointer; transition: all 0.2s;
-            border: 1.5px solid transparent; text-align: center;
+            flex: 1;
+            padding: 5px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1.5px solid transparent;
+            text-align: center;
         }
-        .mode-btn.active { background: #6366f1; color: white; border-color: #4f46e5; }
-        .mode-btn:not(.active) { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
-        .mode-btn:not(.active):hover { background: #e0e7ff; color: #4f46e5; }
+
+        .mode-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .mode-btn:not(.active) {
+            background: #f1f5f9;
+            color: #64748b;
+            border-color: #e2e8f0;
+        }
+
+        .mode-btn:not(.active):hover {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
 
         /* Hint del canvas */
         #canvas-hint {
-            position: fixed; pointer-events: none; z-index: 50;
-            background: rgba(99,102,241,0.9); color: white;
-            padding: 4px 10px; border-radius: 20px; font-size: 11px;
-            font-weight: 600; display: none; white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transform: translate(-50%, -130%);
         }
     </style>
 </head>
+
 <body class="flex h-screen overflow-hidden antialiased text-slate-800 relative">
 
     <!-- Overlay de Edición WYSIWYG mejorado -->
@@ -100,8 +210,12 @@
     <aside class="w-full md:w-[450px] bg-white border-r border-slate-200 flex flex-col shadow-xl z-10 flex-shrink-0">
         <div class="p-4 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <h1 class="text-xl font-extrabold text-indigo-800 tracking-tight flex items-center gap-2">
-                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                Manuscrito.js <span class="text-xs font-semibold bg-indigo-600 text-white px-2 py-0.5 rounded-full ml-auto">PRO</span>
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Manuscrito.js <span
+                    class="text-xs font-semibold bg-indigo-600 text-white px-2 py-0.5 rounded-full ml-auto">PRO</span>
             </h1>
             <p class="text-[10px] text-slate-500 mt-1">Soporte LaTeX, Markdown y edición directa en el papel.</p>
         </div>
@@ -110,7 +224,8 @@
 
             <!-- ── MODO DE INTERPRETACIÓN ── -->
             <div class="space-y-1.5">
-                <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Modo de interpretación</label>
+                <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Modo de
+                    interpretación</label>
                 <div class="flex gap-1.5">
                     <button class="mode-btn active" id="mode-latex" onclick="setMode('latex')">LaTeX</button>
                     <button class="mode-btn" id="mode-markdown" onclick="setMode('markdown')">Markdown</button>
@@ -126,23 +241,31 @@
                 </div>
 
                 <!-- Barra de herramientas dinámica -->
-                <div id="toolbar-latex" class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                <div id="toolbar-latex"
+                    class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
                     <button class="toolbar-btn" onclick="wrapText('\\textbf{', '}')" title="Negrita"><b>B</b></button>
                     <button class="toolbar-btn" onclick="wrapText('\\textit{', '}')" title="Cursiva"><i>I</i></button>
-                    <button class="toolbar-btn" onclick="wrapText('\\underline{', '}')" title="Subrayado"><u>U</u></button>
+                    <button class="toolbar-btn" onclick="wrapText('\\underline{', '}')"
+                        title="Subrayado"><u>U</u></button>
                     <div class="w-px h-5 bg-slate-300 mx-0.5 self-center"></div>
                     <button class="toolbar-btn" onclick="wrapText('\\section{', '}')">Sección</button>
                     <button class="toolbar-btn" onclick="wrapText('\\subsection{', '}')">Sub</button>
-                    <button class="toolbar-btn" onclick="wrapText('\\begin{center}\n', '\n\\end{center}')">Centrar</button>
+                    <button class="toolbar-btn"
+                        onclick="wrapText('\\begin{center}\n', '\n\\end{center}')">Centrar</button>
                     <div class="w-px h-5 bg-slate-300 mx-0.5 self-center"></div>
                     <button class="toolbar-btn" onclick="wrapText('\\fbox{', '}')">Caja</button>
-                    <button class="toolbar-btn" onclick="wrapText('\\begin{equation*}\n', '\n\\end{equation*}')">Fórmula</button>
+                    <button class="toolbar-btn"
+                        onclick="wrapText('\\begin{equation*}\n', '\n\\end{equation*}')">Fórmula</button>
                     <button class="toolbar-btn" onclick="wrapText('\\frac{', '}{denominador}')">Fracción</button>
                     <button class="toolbar-btn" onclick="wrapText('\\sqrt{', '}')">√</button>
                     <div class="w-px h-5 bg-slate-300 mx-0.5 self-center"></div>
-                    <button class="toolbar-btn" onclick="stripBoldToText()" title="Convierte \textbf{...} en \text{...} en todo el editor" style="background:#fef3c7;color:#92400e;border-color:#fcd34d">B→txt</button>
+                    <button class="toolbar-btn" onclick="stripBoldToText()"
+                        title="Convierte \textbf{...} en \text{...} en todo el editor"
+                        style="background:#fef3c7;color:#92400e;border-color:#fcd34d">B→txt</button>
                 </div>
-                <div id="toolbar-markdown" class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200" style="display:none!important">
+                <div id="toolbar-markdown"
+                    class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200"
+                    style="display:none!important">
                     <button class="toolbar-btn" onclick="wrapText('**', '**')" title="Negrita"><b>B</b></button>
                     <button class="toolbar-btn" onclick="wrapText('*', '*')" title="Cursiva"><i>I</i></button>
                     <button class="toolbar-btn" onclick="wrapText('__', '__')" title="Subrayado"><u>U</u></button>
@@ -154,8 +277,11 @@
                     <button class="toolbar-btn" onclick="insertLine('---')">──</button>
                     <button class="toolbar-btn" onclick="wrapText('`', '`')">código</button>
                 </div>
-                <div id="toolbar-mixed" class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200" style="display:none!important">
-                    <button class="toolbar-btn" onclick="wrapText('\\textbf{', '}')" title="Negrita LaTeX"><b>B</b></button>
+                <div id="toolbar-mixed"
+                    class="flex flex-wrap gap-1.5 mb-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200"
+                    style="display:none!important">
+                    <button class="toolbar-btn" onclick="wrapText('\\textbf{', '}')"
+                        title="Negrita LaTeX"><b>B</b></button>
                     <button class="toolbar-btn" onclick="wrapText('**', '**')" title="Negrita MD"><b>B*</b></button>
                     <button class="toolbar-btn" onclick="wrapText('\\textit{', '}')" title="Cursiva"><i>I</i></button>
                     <div class="w-px h-5 bg-slate-300 mx-0.5 self-center"></div>
@@ -166,7 +292,9 @@
                     <button class="toolbar-btn" onclick="insertLine('---')">──</button>
                 </div>
 
-                <textarea id="text-input" class="w-full h-40 p-2.5 border border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-sm resize-none text-xs font-mono leading-relaxed" placeholder="Escribe o pega tu texto aquí..."></textarea>
+                <textarea id="text-input"
+                    class="w-full h-40 p-2.5 border border-slate-300 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-sm resize-none text-xs font-mono leading-relaxed"
+                    placeholder="Escribe o pega tu texto aquí..."></textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
@@ -174,11 +302,14 @@
                 <div class="space-y-1 col-span-2 flex gap-3">
                     <div class="flex-1">
                         <label class="block text-[10px] font-bold text-slate-700 uppercase">Encabezado de página</label>
-                        <input type="text" id="header-text" class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej. Trabajo de Física">
+                        <textarea id="header-text" rows="2"
+                            class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                            placeholder="Ej. Trabajo de Física"></textarea>
                     </div>
                     <div class="flex items-end mb-1.5">
                         <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-700">
-                            <input type="checkbox" id="page-numbers" checked class="w-3.5 h-3.5 accent-indigo-600"> Numerar
+                            <input type="checkbox" id="page-numbers" checked class="w-3.5 h-3.5 accent-indigo-600">
+                            Numerar
                         </label>
                     </div>
                 </div>
@@ -186,7 +317,8 @@
                 <!-- Font -->
                 <div class="space-y-1">
                     <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Fuente</label>
-                    <select id="font-select" class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition cursor-pointer text-xs">
+                    <select id="font-select"
+                        class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition cursor-pointer text-xs">
                         <option value="Caveat">Caveat</option>
                         <option value="Gloria Hallelujah">Gloria Hallelujah</option>
                         <option value="Shadows Into Light">Shadows Into Light</option>
@@ -196,14 +328,17 @@
 
                 <!-- Tinta y Papel -->
                 <div class="space-y-1">
-                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Tinta y Papel</label>
+                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Tinta y
+                        Papel</label>
                     <div class="flex gap-1">
-                        <select id="color-select" class="w-1/2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                        <select id="color-select"
+                            class="w-1/2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
                             <option value="#0f172a">Negro</option>
                             <option value="#1e3a8a" selected>Azul</option>
                             <option value="#7f1d1d">Rojo</option>
                         </select>
-                        <select id="paper-select" class="w-1/2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+                        <select id="paper-select"
+                            class="w-1/2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
                             <option value="lined">Rayas</option>
                             <option value="blank">Blanco</option>
                             <option value="grid">Cuadros</option>
@@ -212,14 +347,48 @@
                 </div>
 
                 <!-- Sliders -->
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Tamaño: <span id="size-val" class="text-indigo-600">30</span>px</label><input type="range" id="size-range" min="18" max="60" value="30" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Inclinación: <span id="tilt-val" class="text-indigo-600">40</span>%</label><input type="range" id="tilt-range" min="0" max="100" value="40" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Imperfección: <span id="jitter-val" class="text-indigo-600">50</span>%</label><input type="range" id="jitter-range" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Ondulación: <span id="wobble-val" class="text-indigo-600">30</span>%</label><input type="range" id="wobble-range" min="0" max="100" value="30" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Ancho letra: <span id="width-val" class="text-indigo-600">100</span>%</label><input type="range" id="width-range" min="50" max="150" value="100" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Sangría Math: <span id="indent-val" class="text-indigo-600">40</span>px</label><input type="range" id="indent-range" min="0" max="120" value="40" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Peso Símbolos: <span id="fallback-weight-val" class="text-indigo-600">400</span></label><input type="range" id="fallback-weight-range" min="100" max="900" step="100" value="400" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
-                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Grosor Lápiz: <span id="main-weight-val" class="text-indigo-600">0</span></label><input type="range" id="main-weight-range" min="0" max="20" value="0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1"></div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Tamaño:
+                        <span id="size-val" class="text-indigo-600">30</span>px</label><input type="range"
+                        id="size-range" min="18" max="60" value="30"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label
+                        class="block text-[10px] font-bold text-slate-700 uppercase">Inclinación: <span id="tilt-val"
+                            class="text-indigo-600">40</span>%</label><input type="range" id="tilt-range" min="0"
+                        max="100" value="40"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label
+                        class="block text-[10px] font-bold text-slate-700 uppercase">Imperfección: <span id="jitter-val"
+                            class="text-indigo-600">50</span>%</label><input type="range" id="jitter-range" min="0"
+                        max="100" value="50"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Ondulación:
+                        <span id="wobble-val" class="text-indigo-600">30</span>%</label><input type="range"
+                        id="wobble-range" min="0" max="100" value="30"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Ancho
+                        letra: <span id="width-val" class="text-indigo-600">100</span>%</label><input type="range"
+                        id="width-range" min="50" max="150" value="100"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Sangría
+                        Math: <span id="indent-val" class="text-indigo-600">40</span>px</label><input type="range"
+                        id="indent-range" min="0" max="120" value="40"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Peso
+                        Símbolos: <span id="fallback-weight-val" class="text-indigo-600">400</span></label><input
+                        type="range" id="fallback-weight-range" min="100" max="900" step="100" value="400"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
+                <div class="space-y-0.5"><label class="block text-[10px] font-bold text-slate-700 uppercase">Grosor
+                        Lápiz: <span id="main-weight-val" class="text-indigo-600">0</span></label><input type="range"
+                        id="main-weight-range" min="0" max="20" value="0"
+                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mt-1">
+                </div>
 
                 <!-- Opciones extra -->
                 <div class="col-span-2 flex flex-wrap gap-3 pt-1">
@@ -227,7 +396,8 @@
                         <input type="checkbox" id="strip-accents" class="w-3.5 h-3.5 accent-indigo-600">
                         Eliminar acentos
                     </label>
-                    <label class="flex items-center gap-1.5 cursor-pointer text-xs text-slate-700 font-semibold" title="Aplica textura granulada simulando lápiz">
+                    <label class="flex items-center gap-1.5 cursor-pointer text-xs text-slate-700 font-semibold"
+                        title="Aplica textura granulada simulando lápiz">
                         <input type="checkbox" id="pencil-effect" class="w-3.5 h-3.5 accent-indigo-600" checked>
                         Textura Lápiz
                     </label>
@@ -235,21 +405,30 @@
 
                 <!-- Fuentes personalizadas -->
                 <div class="space-y-2 border-t border-slate-200 pt-3 col-span-2">
-                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Añadir Fuente Personalizada</label>
+                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wide">Añadir Fuente
+                        Personalizada</label>
                     <div class="flex gap-2 items-center">
-                        <label class="flex-1 flex items-center gap-1 cursor-pointer bg-amber-50 border border-amber-200 rounded-lg p-2 hover:bg-amber-100 transition text-xs text-amber-800 font-medium">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        <label
+                            class="flex-1 flex items-center gap-1 cursor-pointer bg-amber-50 border border-amber-200 rounded-lg p-2 hover:bg-amber-100 transition text-xs text-amber-800 font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
                             Subir archivo .ttf / .otf
                             <input type="file" id="font-upload" accept=".ttf,.otf,.woff,.woff2" class="hidden">
                         </label>
                     </div>
                     <div class="flex gap-1.5">
-                        <select id="font-source" class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] outline-none cursor-pointer">
+                        <select id="font-source"
+                            class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] outline-none cursor-pointer">
                             <option value="google">Google</option>
                             <option value="local">Local/PC</option>
                         </select>
-                        <input type="text" id="custom-font-input" class="flex-1 p-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs" placeholder="Nombre de fuente">
-                        <button id="add-font-btn" class="bg-indigo-100 text-indigo-700 px-2 rounded-lg hover:bg-indigo-200 font-bold text-xs transition flex-shrink-0">+</button>
+                        <input type="text" id="custom-font-input"
+                            class="flex-1 p-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
+                            placeholder="Nombre de fuente">
+                        <button id="add-font-btn"
+                            class="bg-indigo-100 text-indigo-700 px-2 rounded-lg hover:bg-indigo-200 font-bold text-xs transition flex-shrink-0">+</button>
                     </div>
                 </div>
             </div>
@@ -257,8 +436,12 @@
 
         <!-- Export -->
         <div class="p-4 border-t border-slate-100 bg-white">
-            <button id="export-btn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <button id="export-btn"
+                class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
                 Exportar a PDF
             </button>
         </div>
@@ -266,7 +449,8 @@
 
     <!-- ===================== PANEL DERECHO ===================== -->
     <main class="flex-1 bg-slate-200/50 overflow-y-auto p-4 md:p-6 relative" id="main-scroll">
-        <div class="max-w-[800px] mx-auto text-center mb-4 text-slate-500 text-xs font-bold bg-white/50 py-1.5 rounded-full shadow-sm">
+        <div
+            class="max-w-[800px] mx-auto text-center mb-4 text-slate-500 text-xs font-bold bg-white/50 py-1.5 rounded-full shadow-sm">
             💡 Pasa el cursor sobre el texto y haz clic para editarlo directamente en el papel.
         </div>
         <div id="pages-wrapper" class="flex flex-col items-center gap-8 pb-12"></div>
@@ -274,1067 +458,1070 @@
 
     <!-- ===================== JAVASCRIPT ===================== -->
     <script>
-    // =========================================================
-    //  MODO GLOBAL
-    // =========================================================
-    let currentMode = 'latex'; // 'latex' | 'markdown' | 'mixed'
+        // =========================================================
+        //  MODO GLOBAL
+        // =========================================================
+        let currentMode = 'latex'; // 'latex' | 'markdown' | 'mixed'
 
-    function setMode(mode) {
-        currentMode = mode;
-        ['latex','markdown','mixed'].forEach(m => {
-            document.getElementById('mode-' + m).classList.toggle('active', m === mode);
-            const tb = document.getElementById('toolbar-' + m);
-            if (tb) tb.style.setProperty('display', m === mode ? 'flex' : 'none', 'important');
-        });
-        triggerRender();
-    }
+        function setMode(mode) {
+            currentMode = mode;
+            ['latex', 'markdown', 'mixed'].forEach(m => {
+                document.getElementById('mode-' + m).classList.toggle('active', m === mode);
+                const tb = document.getElementById('toolbar-' + m);
+                if (tb) tb.style.setProperty('display', m === mode ? 'flex' : 'none', 'important');
+            });
+            triggerRender();
+        }
 
-    // =========================================================
-    //  UTILIDADES DE BARRA DE HERRAMIENTAS
-    // =========================================================
-    function wrapText(pre, post) {
-        const input = document.getElementById('text-input');
-        const start = input.selectionStart, end = input.selectionEnd;
-        const text = input.value, selected = text.substring(start, end);
-        input.value = text.substring(0, start) + pre + selected + post + text.substring(end);
-        input.focus();
-        input.setSelectionRange(start + pre.length, start + pre.length + selected.length);
-        input.dispatchEvent(new Event('input'));
-    }
-
-    function insertLine(prefix) {
-        const input = document.getElementById('text-input');
-        const start = input.selectionStart;
-        const text = input.value;
-        // Ir al inicio de la línea actual
-        let lineStart = text.lastIndexOf('\n', start - 1) + 1;
-        input.value = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-        input.focus();
-        input.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
-        input.dispatchEvent(new Event('input'));
-    }
-
-    // Reemplaza todos los \textbf{contenido} por \text{contenido} en el editor
-    function stripBoldToText() {
-        const input = document.getElementById('text-input');
-        const before = input.value;
-        // Reemplaza \textbf{...} → \text{...} (respeta llaves anidadas con un loop)
-        let after = before.replace(/\\textbf\{([^}]*)\}/g, '\\text{$1}');
-        if (after === before) {
-            // Nada que reemplazar
+        // =========================================================
+        //  UTILIDADES DE BARRA DE HERRAMIENTAS
+        // =========================================================
+        function wrapText(pre, post) {
+            const input = document.getElementById('text-input');
+            const start = input.selectionStart, end = input.selectionEnd;
+            const text = input.value, selected = text.substring(start, end);
+            input.value = text.substring(0, start) + pre + selected + post + text.substring(end);
             input.focus();
-            return;
-        }
-        const cursor = input.selectionStart;
-        input.value = after;
-        // Mantener cursor en posición aproximada
-        input.setSelectionRange(Math.min(cursor, after.length), Math.min(cursor, after.length));
-        input.focus();
-        input.dispatchEvent(new Event('input'));
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // ===== DOM =====
-        const $ = id => document.getElementById(id);
-        const textInput = $('text-input'), fontSelect = $('font-select');
-        const paperSelect = $('paper-select'), colorSelect = $('color-select');
-        const headerText = $('header-text'), pageNumbers = $('page-numbers');
-        const sizeRange = $('size-range'), sizeVal = $('size-val');
-        const widthRange = $('width-range'), widthVal = $('width-val');
-        const tiltRange = $('tilt-range'), tiltVal = $('tilt-val');
-        const jitterRange = $('jitter-range'), jitterVal = $('jitter-val');
-        const wobbleRange = $('wobble-range'), wobbleVal = $('wobble-val');
-        const indentRange = $('indent-range'), indentVal = $('indent-val');
-        const fallbackWeightRange = $('fallback-weight-range'), fallbackWeightVal = $('fallback-weight-val');
-        const mainWeightRange = $('main-weight-range'), mainWeightVal = $('main-weight-val');
-        const stripAccentsChk = $('strip-accents');
-        const pencilEffectChk = $('pencil-effect');
-        const fontSource = $('font-source'), customFontInput = $('custom-font-input');
-        const addFontBtn = $('add-font-btn'), fontUpload = $('font-upload');
-        const exportBtn = $('export-btn'), pagesWrapper = $('pages-wrapper');
-        const editOverlay = $('edit-overlay');
-        const editInput = $('edit-input');
-        const editConfirm = $('edit-confirm');
-        const editCancel = $('edit-cancel');
-        const canvasHint = $('canvas-hint');
-
-        const PW = 794, PH = 1123, ML = 100, MR = 60, MT = 120, MB = 100;
-
-        // =========================================================
-        //  STRIP ACCENTS
-        // =========================================================
-        function stripAccents(str) {
-            // Normaliza a NFD y elimina los diacríticos (caracteres combinatorios)
-            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            input.setSelectionRange(start + pre.length, start + pre.length + selected.length);
+            input.dispatchEvent(new Event('input'));
         }
 
-        function maybeStripAccents(str) {
-            return stripAccentsChk.checked ? stripAccents(str) : str;
+        function insertLine(prefix) {
+            const input = document.getElementById('text-input');
+            const start = input.selectionStart;
+            const text = input.value;
+            // Ir al inicio de la línea actual
+            let lineStart = text.lastIndexOf('\n', start - 1) + 1;
+            input.value = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+            input.focus();
+            input.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
+            input.dispatchEvent(new Event('input'));
         }
 
-        // =========================================================
-        //  EVENT LISTENERS
-        // =========================================================
-        const sliders = [[sizeRange,sizeVal],[widthRange,widthVal],[tiltRange,tiltVal],[jitterRange,jitterVal],[wobbleRange,wobbleVal],[indentRange,indentVal],[fallbackWeightRange,fallbackWeightVal],[mainWeightRange,mainWeightVal]];
-        sliders.forEach(([r,l]) => r.addEventListener('input', () => { l.textContent = r.value; triggerRender(); }));
-        [textInput, fontSelect, paperSelect, colorSelect, headerText, pageNumbers, stripAccentsChk, pencilEffectChk].forEach(el => el.addEventListener('input', triggerRender));
+        // Reemplaza todos los \textbf{contenido} por \text{contenido} en el editor
+        function stripBoldToText() {
+            const input = document.getElementById('text-input');
+            const before = input.value;
+            // Reemplaza \textbf{...} → \text{...} (respeta llaves anidadas con un loop)
+            let after = before.replace(/\\textbf\{([^}]*)\}/g, '\\text{$1}');
+            if (after === before) {
+                // Nada que reemplazar
+                input.focus();
+                return;
+            }
+            const cursor = input.selectionStart;
+            input.value = after;
+            // Mantener cursor en posición aproximada
+            input.setSelectionRange(Math.min(cursor, after.length), Math.min(cursor, after.length));
+            input.focus();
+            input.dispatchEvent(new Event('input'));
+        }
 
-        // =========================================================
-        //  FONT UPLOAD
-        // =========================================================
-        fontUpload.addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const name = file.name.replace(/\.(ttf|otf|woff2?)$/i,'').replace(/[^a-zA-Z0-9 _-]/g,'');
-            try {
-                const url = URL.createObjectURL(file);
-                const ff = new FontFace(name, `url(${url})`);
-                const loaded = await ff.load();
-                document.fonts.add(loaded);
+        document.addEventListener('DOMContentLoaded', () => {
+            // ===== DOM =====
+            const $ = id => document.getElementById(id);
+            const textInput = $('text-input'), fontSelect = $('font-select');
+            const paperSelect = $('paper-select'), colorSelect = $('color-select');
+            const headerText = $('header-text'), pageNumbers = $('page-numbers');
+            const sizeRange = $('size-range'), sizeVal = $('size-val');
+            const widthRange = $('width-range'), widthVal = $('width-val');
+            const tiltRange = $('tilt-range'), tiltVal = $('tilt-val');
+            const jitterRange = $('jitter-range'), jitterVal = $('jitter-val');
+            const wobbleRange = $('wobble-range'), wobbleVal = $('wobble-val');
+            const indentRange = $('indent-range'), indentVal = $('indent-val');
+            const fallbackWeightRange = $('fallback-weight-range'), fallbackWeightVal = $('fallback-weight-val');
+            const mainWeightRange = $('main-weight-range'), mainWeightVal = $('main-weight-val');
+            const stripAccentsChk = $('strip-accents');
+            const pencilEffectChk = $('pencil-effect');
+            const fontSource = $('font-source'), customFontInput = $('custom-font-input');
+            const addFontBtn = $('add-font-btn'), fontUpload = $('font-upload');
+            const exportBtn = $('export-btn'), pagesWrapper = $('pages-wrapper');
+            const editOverlay = $('edit-overlay');
+            const editInput = $('edit-input');
+            const editConfirm = $('edit-confirm');
+            const editCancel = $('edit-cancel');
+            const canvasHint = $('canvas-hint');
+
+            const PW = 794, PH = 1123, ML = 100, MR = 60, MT = 120, MB = 100;
+
+            // =========================================================
+            //  STRIP ACCENTS
+            // =========================================================
+            function stripAccents(str) {
+                // Normaliza a NFD y elimina los diacríticos (caracteres combinatorios)
+                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function maybeStripAccents(str) {
+                return stripAccentsChk.checked ? stripAccents(str) : str;
+            }
+
+            // =========================================================
+            //  EVENT LISTENERS
+            // =========================================================
+            const sliders = [[sizeRange, sizeVal], [widthRange, widthVal], [tiltRange, tiltVal], [jitterRange, jitterVal], [wobbleRange, wobbleVal], [indentRange, indentVal], [fallbackWeightRange, fallbackWeightVal], [mainWeightRange, mainWeightVal]];
+            sliders.forEach(([r, l]) => r.addEventListener('input', () => { l.textContent = r.value; triggerRender(); }));
+            [textInput, fontSelect, paperSelect, colorSelect, headerText, pageNumbers, stripAccentsChk, pencilEffectChk].forEach(el => el.addEventListener('input', triggerRender));
+
+            // =========================================================
+            //  FONT UPLOAD
+            // =========================================================
+            fontUpload.addEventListener('change', async (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                const name = file.name.replace(/\.(ttf|otf|woff2?)$/i, '').replace(/[^a-zA-Z0-9 _-]/g, '');
+                try {
+                    const url = URL.createObjectURL(file);
+                    const ff = new FontFace(name, `url(${url})`);
+                    const loaded = await ff.load();
+                    document.fonts.add(loaded);
+                    const opt = document.createElement('option');
+                    opt.value = name; opt.textContent = name + ' (subida)';
+                    fontSelect.appendChild(opt); fontSelect.value = name;
+                    triggerRender();
+                } catch (err) { alert('Error cargando fuente: ' + err.message); }
+            });
+
+            addFontBtn.addEventListener('click', () => {
+                const name = customFontInput.value.trim(); if (!name) return;
+                if (fontSource.value === 'google') {
+                    const link = document.createElement('link');
+                    link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@400;700&display=swap`;
+                    link.rel = 'stylesheet'; document.head.appendChild(link);
+                    link.onload = () => triggerRender();
+                }
                 const opt = document.createElement('option');
-                opt.value = name; opt.textContent = name + ' (subida)';
+                opt.value = name; opt.textContent = name + (fontSource.value === 'local' ? ' (local)' : '');
                 fontSelect.appendChild(opt); fontSelect.value = name;
-                triggerRender();
-            } catch(err) { alert('Error cargando fuente: ' + err.message); }
-        });
+                customFontInput.value = ''; triggerRender();
+            });
 
-        addFontBtn.addEventListener('click', () => {
-            const name = customFontInput.value.trim(); if (!name) return;
-            if (fontSource.value === 'google') {
-                const link = document.createElement('link');
-                link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g,'+')}:wght@400;700&display=swap`;
-                link.rel = 'stylesheet'; document.head.appendChild(link);
-                link.onload = () => triggerRender();
-            }
-            const opt = document.createElement('option');
-            opt.value = name; opt.textContent = name + (fontSource.value === 'local' ? ' (local)' : '');
-            fontSelect.appendChild(opt); fontSelect.value = name;
-            customFontInput.value = ''; triggerRender();
-        });
+            // =========================================================
+            //  DEBOUNCE
+            // =========================================================
+            let _rt; function triggerRender() { clearTimeout(_rt); _rt = setTimeout(executeRender, 130); }
 
-        // =========================================================
-        //  DEBOUNCE
-        // =========================================================
-        let _rt; function triggerRender() { clearTimeout(_rt); _rt = setTimeout(executeRender, 130); }
-
-        // =========================================================
-        //  LATEX SYMBOLS MAP
-        // =========================================================
-        const SYM = {
-            '\\sigma':'σ','\\tau':'τ','\\varepsilon':'ε','\\epsilon':'ε','\\Delta':'Δ','\\delta':'δ',
-            '\\nu':'ν','\\alpha':'α','\\beta':'β','\\gamma':'γ','\\theta':'θ','\\Theta':'Θ',
-            '\\pi':'π','\\mu':'μ','\\rho':'ρ','\\omega':'ω','\\Omega':'Ω','\\lambda':'λ','\\Lambda':'Λ',
-            '\\phi':'φ','\\Phi':'Φ','\\psi':'ψ','\\Psi':'Ψ','\\chi':'χ','\\eta':'η','\\xi':'ξ','\\zeta':'ζ',
-            '\\kappa':'κ','\\iota':'ι','\\upsilon':'υ',
-            '\\infty':'∞','\\sum':'Σ','\\int':'∫','\\approx':'≈','\\neq':'≠','\\equiv':'≡',
-            '\\leq':'≤','\\geq':'≥','\\times':'×','\\cdot':'·','\\pm':'±','\\mp':'∓',
-            '\\rightarrow':'→','\\leftarrow':'←','\\Rightarrow':'⇒','\\Leftarrow':'⇐',
-            '\\uparrow':'↑','\\downarrow':'↓','\\leftrightarrow':'↔',
-            '\\partial':'∂','\\nabla':'∇','\\forall':'∀','\\exists':'∃',
-            '\\in':'∈','\\notin':'∉','\\subset':'⊂','\\supset':'⊃','\\cup':'∪','\\cap':'∩','\\emptyset':'∅',
-            '\\max':'max','\\min':'min','\\log':'log','\\ln':'ln','\\sin':'sin','\\cos':'cos',
-            '\\tan':'tan','\\lim':'lim','\\exp':'exp','\\det':'det',
-            '\\circ':'∘','\\bullet':'•','\\star':'★','\\ldots':'…','\\cdots':'⋯',
-            '\\hbar':'ℏ','\\Re':'ℜ','\\Im':'ℑ',
-        };
-        const SYM_KEYS = Object.keys(SYM).sort((a,b) => b.length - a.length);
-
-        // =========================================================
-        //  MARKDOWN PREPROCESSOR
-        // =========================================================
-        function preprocessMarkdown(raw) {
-            const blocks = [];
-            // Dividir por líneas
-            const lines = raw.split('\n');
-            let i = 0;
-            while (i < lines.length) {
-                const line = lines[i];
-                const trimmed = line.trim();
-
-                if (!trimmed) { blocks.push({type:'vs', h:8}); i++; continue; }
-
-                // Regla horizontal
-                if (/^[-*_]{3,}$/.test(trimmed)) { blocks.push({type:'rule'}); i++; continue; }
-
-                // Encabezados
-                const h3 = trimmed.match(/^###\s+(.*)/);
-                if (h3) { blocks.push({type:'text', content:parseMdInline(h3[1]), bold:true, scale:1.1}); i++; continue; }
-                const h2 = trimmed.match(/^##\s+(.*)/);
-                if (h2) { blocks.push({type:'text', content:parseMdInline(h2[1]), bold:true, scale:1.2}); i++; continue; }
-                const h1 = trimmed.match(/^#\s+(.*)/);
-                if (h1) { blocks.push({type:'text', content:parseMdInline(h1[1]), bold:true, scale:1.4}); i++; continue; }
-
-                // <br> explícito → salto
-                if (/^<br\s*\/?>$/i.test(trimmed)) { blocks.push({type:'vs', h:20}); i++; continue; }
-
-                // Línea normal con posible <br> inline
-                const parts = line.split(/<br\s*\/?>/i);
-                for (let pi = 0; pi < parts.length; pi++) {
-                    const p = parts[pi].trim();
-                    if (p) parseMdLine(p, blocks);
-                    if (pi < parts.length - 1) blocks.push({type:'vs', h: 8});
-                }
-                i++;
-            }
-            return blocks;
-        }
-
-        function parseMdLine(text, blocks) {
-            // Detectar negrita, cursiva, subrayado en la línea
-            // Los fragmentos inline se procesan como texto con estilos
-            // Dividimos la línea respetando los marcadores **,*,__,_,`
-            const segs = splitMdInline(text);
-            if (segs.length === 0) return;
-            // Agrupar en bloques inline
-            for (const seg of segs) {
-                if (seg.text && seg.text.trim()) {
-                    blocks.push({
-                        type: 'text',
-                        content: seg.text,
-                        bold: seg.bold||false,
-                        italic: seg.italic||false,
-                        underline: seg.underline||false,
-                        mono: seg.mono||false,
-                        inline: true
-                    });
-                }
-            }
-            // Forzar nueva línea al final de la línea
-            blocks.push({type:'vs', h:0, newline:true});
-        }
-
-        function parseMdInline(text) {
-            // Retorna solo texto plano (sin estilos) para títulos
-            return text
-                .replace(/\*\*(.+?)\*\*/g,'$1')
-                .replace(/\*(.+?)\*/g,'$1')
-                .replace(/__(.+?)__/g,'$1')
-                .replace(/_(.+?)_/g,'$1')
-                .replace(/`(.+?)`/g,'$1')
-                .replace(/<br\s*\/?>/gi,'');
-        }
-
-        function splitMdInline(text) {
-            // Tokeniza la línea en segmentos con estilos
-            const segments = [];
-            let remaining = text;
-            // Estado actual de estilos
-            let bold=false, italic=false, underline=false, mono=false;
-            let buf = '';
-
-            const flush = () => {
-                if (buf) segments.push({text:buf, bold, italic, underline, mono});
-                buf = '';
+            // =========================================================
+            //  LATEX SYMBOLS MAP
+            // =========================================================
+            const SYM = {
+                '\\sigma': 'σ', '\\tau': 'τ', '\\varepsilon': 'ε', '\\epsilon': 'ε', '\\Delta': 'Δ', '\\delta': 'δ',
+                '\\nu': 'ν', '\\alpha': 'α', '\\beta': 'β', '\\gamma': 'γ', '\\theta': 'θ', '\\Theta': 'Θ',
+                '\\pi': 'π', '\\mu': 'μ', '\\rho': 'ρ', '\\omega': 'ω', '\\Omega': 'Ω', '\\lambda': 'λ', '\\Lambda': 'Λ',
+                '\\phi': 'φ', '\\Phi': 'Φ', '\\psi': 'ψ', '\\Psi': 'Ψ', '\\chi': 'χ', '\\eta': 'η', '\\xi': 'ξ', '\\zeta': 'ζ',
+                '\\kappa': 'κ', '\\iota': 'ι', '\\upsilon': 'υ',
+                '\\infty': '∞', '\\sum': 'Σ', '\\int': '∫', '\\approx': '≈', '\\neq': '≠', '\\equiv': '≡',
+                '\\leq': '≤', '\\geq': '≥', '\\times': '×', '\\cdot': '·', '\\pm': '±', '\\mp': '∓',
+                '\\rightarrow': '→', '\\leftarrow': '←', '\\Rightarrow': '⇒', '\\Leftarrow': '⇐',
+                '\\uparrow': '↑', '\\downarrow': '↓', '\\leftrightarrow': '↔',
+                '\\partial': '∂', '\\nabla': '∇', '\\forall': '∀', '\\exists': '∃',
+                '\\in': '∈', '\\notin': '∉', '\\subset': '⊂', '\\supset': '⊃', '\\cup': '∪', '\\cap': '∩', '\\emptyset': '∅',
+                '\\max': 'max', '\\min': 'min', '\\log': 'log', '\\ln': 'ln', '\\sin': 'sin', '\\cos': 'cos',
+                '\\tan': 'tan', '\\lim': 'lim', '\\exp': 'exp', '\\det': 'det',
+                '\\circ': '∘', '\\bullet': '•', '\\star': '★', '\\ldots': '…', '\\cdots': '⋯',
+                '\\hbar': 'ℏ', '\\Re': 'ℜ', '\\Im': 'ℑ',
             };
+            const SYM_KEYS = Object.keys(SYM).sort((a, b) => b.length - a.length);
 
-            // Parser simple con regex secuencial
-            // Orden: ** antes que *, __ antes que _
-            const patterns = [
-                { re: /^\*\*(.+?)\*\*/, toggle: 'bold' },
-                { re: /^\*(.+?)\*/, toggle: 'italic' },
-                { re: /^__(.+?)__/, toggle: 'underline' },
-                { re: /^_(.+?)_/, toggle: 'italic' },
-                { re: /^`(.+?)`/, toggle: 'mono' },
-                { re: /^<br\s*\/?>/i, br: true },
-            ];
+            // =========================================================
+            //  MARKDOWN PREPROCESSOR
+            // =========================================================
+            function preprocessMarkdown(raw) {
+                const blocks = [];
+                // Dividir por líneas
+                const lines = raw.split('\n');
+                let i = 0;
+                while (i < lines.length) {
+                    const line = lines[i];
+                    const trimmed = line.trim();
 
-            let pos = 0;
-            while (pos < remaining.length) {
-                let matched = false;
-                for (const pat of patterns) {
-                    const m = remaining.slice(pos).match(pat.re);
-                    if (m) {
-                        flush();
-                        if (pat.br) {
-                            segments.push({br:true});
-                        } else {
-                            segments.push({
-                                text: m[1],
-                                bold: pat.toggle==='bold',
-                                italic: pat.toggle==='italic',
-                                underline: pat.toggle==='underline',
-                                mono: pat.toggle==='mono'
-                            });
-                        }
-                        pos += m[0].length;
-                        matched = true; break;
+                    if (!trimmed) { blocks.push({ type: 'vs', h: 8 }); i++; continue; }
+
+                    // Regla horizontal
+                    if (/^[-*_]{3,}$/.test(trimmed)) { blocks.push({ type: 'rule' }); i++; continue; }
+
+                    // Encabezados
+                    const h3 = trimmed.match(/^###\s+(.*)/);
+                    if (h3) { blocks.push({ type: 'text', content: parseMdInline(h3[1]), bold: true, scale: 1.1 }); i++; continue; }
+                    const h2 = trimmed.match(/^##\s+(.*)/);
+                    if (h2) { blocks.push({ type: 'text', content: parseMdInline(h2[1]), bold: true, scale: 1.2 }); i++; continue; }
+                    const h1 = trimmed.match(/^#\s+(.*)/);
+                    if (h1) { blocks.push({ type: 'text', content: parseMdInline(h1[1]), bold: true, scale: 1.4 }); i++; continue; }
+
+                    // <br> explícito → salto
+                    if (/^<br\s*\/?>$/i.test(trimmed)) { blocks.push({ type: 'vs', h: 20 }); i++; continue; }
+
+                    // Línea normal con posible <br> inline
+                    const parts = line.split(/<br\s*\/?>/i);
+                    for (let pi = 0; pi < parts.length; pi++) {
+                        const p = parts[pi].trim();
+                        if (p) parseMdLine(p, blocks);
+                        if (pi < parts.length - 1) blocks.push({ type: 'vs', h: 8 });
+                    }
+                    i++;
+                }
+                return blocks;
+            }
+
+            function parseMdLine(text, blocks) {
+                // Detectar negrita, cursiva, subrayado en la línea
+                // Los fragmentos inline se procesan como texto con estilos
+                // Dividimos la línea respetando los marcadores **,*,__,_,`
+                const segs = splitMdInline(text);
+                if (segs.length === 0) return;
+                // Agrupar en bloques inline
+                for (const seg of segs) {
+                    if (seg.text && seg.text.trim()) {
+                        blocks.push({
+                            type: 'text',
+                            content: seg.text,
+                            bold: seg.bold || false,
+                            italic: seg.italic || false,
+                            underline: seg.underline || false,
+                            mono: seg.mono || false,
+                            inline: true
+                        });
                     }
                 }
-                if (!matched) { buf += remaining[pos]; pos++; }
-            }
-            flush();
-            return segments;
-        }
-
-        // =========================================================
-        //  LATEX PREPROCESSOR (mejorado)
-        // =========================================================
-        function preprocessLatex(raw) {
-            let text = raw;
-
-            // 0. Cortar el preámbulo: todo lo que está antes de \begin{document}
-            //    Los documentos LaTeX reales tienen mucho basura en el preámbulo que no queremos renderizar
-            const docIdx = text.indexOf('\\begin{document}');
-            if (docIdx !== -1) {
-                text = text.substring(docIdx + '\\begin{document}'.length);
+                // Forzar nueva línea al final de la línea
+                blocks.push({ type: 'vs', h: 0, newline: true });
             }
 
-            // 1. Eliminar comentarios LaTeX
-            text = text.replace(/(?<!\\)%[^\n]*/g, '');
-
-            // 2. Eliminar comandos de estructura de documento
-            text = text.replace(/\\documentclass(\[.*?\])?\{[^}]*\}/g, '');
-            text = text.replace(/\\usepackage(\[.*?\])?\{[^}]*\}/g, '');
-            text = text.replace(/\\begin\{document\}/g, '');
-            text = text.replace(/\\end\{document\}/g, '');
-            text = text.replace(/\\maketitle/g, '');
-            text = text.replace(/\\title\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
-            text = text.replace(/\\author\{([^}]*)\}/g, '\n$1\n');
-            text = text.replace(/\\date\{([^}]*)\}/g, '\n$1\n');
-
-            // 3. Comandos de página y layout
-            text = text.replace(/\\(?:thispagestyle|pagestyle|fancyhf|fancyhead|fancyfoot)(\{[^}]*\}|\[[^\]]*\]){0,3}/g, '');
-            text = text.replace(/\\(?:newpage|clearpage|pagebreak)/g, '\n⌈PAGEBREAK⌉\n');
-            text = text.replace(/\\(?:noindent|indent)/g, '');
-            text = text.replace(/\\(?:centering)/g, '');
-
-            // 4. Espaciado vertical
-            text = text.replace(/\\vspace\*?\{[^}]*\}/g, '\n⌈VS⌉\n');
-            text = text.replace(/\\medskip/g, '\n⌈VS⌉\n');
-            text = text.replace(/\\bigskip/g, '\n⌈VS⌉\n');
-            text = text.replace(/\\smallskip/g, '\n⌈VS⌉\n');
-            text = text.replace(/\\vfill/g, '\n⌈VS⌉\n');
-
-            // 5. Espaciado horizontal
-            text = text.replace(/\\hspace\*?\{[^}]*\}/g, '   ');
-            text = text.replace(/\\hfill/g, '   ');
-            text = text.replace(/\\quad/g, '   ').replace(/\\qquad/g, '      ');
-            text = text.replace(/\\,/g, ' ').replace(/\\;/g, '  ').replace(/\\:/g, '  ').replace(/\\!/g, '');
-
-            // 6. Saltos de línea
-            text = text.replace(/\\\\(\[\d+(?:pt|cm|mm)\])?/g, '\n');
-            text = text.replace(/\\(?:newline|linebreak|br)/g, '\n');
-            // <br> de HTML que puedan estar en el texto
-            text = text.replace(/<br\s*\/?>/gi, '\n');
-
-            // 7. Entornos matemáticos
-            text = text.replace(/\\begin\{align\*?\}([\s\S]*?)\\end\{align\*?\}/g, (_, inner) =>
-                '\n' + inner.split(/\\\\/).map(l => l.replace(/&/g,' ').trim()).filter(l=>l).map(l => '⌈MATH⌉' + l).join('\n') + '\n');
-            text = text.replace(/\\begin\{equation\*?\}([\s\S]*?)\\end\{equation\*?\}/g, (_, inner) =>
-                '\n⌈MATH⌉' + inner.replace(/\\\\/g,' ').trim() + '\n');
-            text = text.replace(/\\begin\{gather\*?\}([\s\S]*?)\\end\{gather\*?\}/g, (_, inner) =>
-                '\n' + inner.split(/\\\\/).map(l=>l.trim()).filter(l=>l).map(l=>'⌈MATH⌉'+l).join('\n') + '\n');
-            // Modo inline $...$ y $$...$$
-            text = text.replace(/\$\$([^\$]+)\$\$/g, '\n⌈MATH⌉$1\n');
-            // Los $ inline los dejamos para tokenize
-
-            // 8. Otros entornos
-            text = text.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, (_, inner) =>
-                '\n⌈CENTER⌉' + inner.trim() + '\n');
-            text = text.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (_, inner) => {
-                return '\n' + inner.replace(/\\item\s*/g, '• ') + '\n';
-            });
-            text = text.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, (_, inner) => {
-                let n=0; return '\n' + inner.replace(/\\item\s*/g, ()=>(++n)+'. ') + '\n';
-            });
-            // Ignorar otros entornos desconocidos (solo quitar el begin/end)
-            text = text.replace(/\\begin\{[^}]*\}/g, '');
-            text = text.replace(/\\end\{[^}]*\}/g, '');
-
-            // 9. Secciones
-            text = text.replace(/\\section\*?\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
-            text = text.replace(/\\subsection\*?\{([^}]*)\}/g, '\n⌈SSEC⌉$1\n');
-            text = text.replace(/\\subsubsection\*?\{([^}]*)\}/g, '\n⌈SSSEC⌉$1\n');
-            text = text.replace(/\\paragraph\*?\{([^}]*)\}/g, '\n⌈SSEC⌉$1\n');
-            text = text.replace(/\\chapter\*?\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
-
-            // 10. Línea y regla
-            text = text.replace(/\\rule\{[^}]*\}\{[^}]*\}/g, '⌈RULE⌉');
-            text = text.replace(/\\hrule/g, '⌈RULE⌉');
-
-            // 11. Formatos de texto
-            text = text.replace(/\\fbox\{([\s\S]*?)\}/g, '⌈BOX⌉$1⌈/BOX⌉');
-            text = text.replace(/\\textbf\{([^}]*)\}/g, '⌈U⌉$1⌈/U⌉'); // negrita → subrayado manuscrito
-            text = text.replace(/\\textit\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
-            text = text.replace(/\\emph\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
-            text = text.replace(/\\underline\{([^}]*)\}/g, '⌈U⌉$1⌈/U⌉');
-            text = text.replace(/\\text\{([^}]*)\}/g, '$1');
-            text = text.replace(/\\mathrm\{([^}]*)\}/g, '$1');
-            text = text.replace(/\\mathbf\{([^}]*)\}/g, '⌈B⌉$1⌈/B⌉');
-            text = text.replace(/\\mathit\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
-
-            // 12. Paréntesis grandes
-            text = text.replace(/\\(?:bigl|bigr|Bigl|Bigr|left|right)\s*([([{\])}.|])/g, '$1');
-            text = text.replace(/\\(?:big|Big|bigg|Bigg)[lr]?\s*([([{\])}.|])/g, '$1');
-
-            // 13. Comandos residuales
-            text = text.replace(/\\(?:LaTeX|TeX)/g, 'LaTeX');
-            text = text.replace(/\\(?:textwidth|linewidth|columnwidth)/g, '');
-            text = text.replace(/\\(?:today)/g, new Date().toLocaleDateString('es'));
-
-            // Limpiar comandos con argumento (repetir para anidados)
-            for (let pass=0; pass<3; pass++) {
-                text = text.replace(/\\(?!frac|sqrt)[a-zA-Z]+\{([^}]*)\}/g, '$1');
+            function parseMdInline(text) {
+                // Retorna solo texto plano (sin estilos) para títulos
+                return text
+                    .replace(/\*\*(.+?)\*\*/g, '$1')
+                    .replace(/\*(.+?)\*/g, '$1')
+                    .replace(/__(.+?)__/g, '$1')
+                    .replace(/_(.+?)_/g, '$1')
+                    .replace(/`(.+?)`/g, '$1')
+                    .replace(/<br\s*\/?>/gi, '');
             }
-            // Limpiar comandos sin argumento QUE NO SEAN símbolos LaTeX.
-            // Los símbolos (\sigma, \alpha, etc.) se dejan para que tokenize los sustituya
-            // con la fuente correcta (peso normal). Pre-sustituirlos aquí los dejaba
-            // en Unicode puro que la fuente de reserva renderizaba en negrilla.
-            const _symCmdSet = new Set(SYM_KEYS.map(k => k.slice(1)));
-            _symCmdSet.add('frac'); _symCmdSet.add('sqrt');
-            text = text.replace(/\\([a-zA-Z]+)/g, (m, cmd) => _symCmdSet.has(cmd) ? m : '');
-            // NOTA: Se eliminó la limpieza global de llaves aquí, porque rompía las 
-            // fracciones y raíces anidadas antes de llegar al tokenizer matemático.
 
-            // 14. Parsear bloques
-            const lines = text.split('\n');
-            const blocks = [];
-            for (const raw of lines) {
-                const line = raw.trim();
-                if (!line) { blocks.push({type:'vs', h:8}); continue; }
-                if (line === '⌈VS⌉') { blocks.push({type:'vs', h:20}); continue; }
-                if (line === '⌈RULE⌉') { blocks.push({type:'rule'}); continue; }
-                if (line === '⌈PAGEBREAK⌉') { blocks.push({type:'pagebreak'}); continue; }
-                if (line.startsWith('⌈SEC⌉'))  { blocks.push({type:'text', content:cleanCmd(line.replace('⌈SEC⌉','')),  bold:false, scale:1.0, centered:true}); continue; }
-                if (line.startsWith('⌈SSEC⌉')) { blocks.push({type:'subsec', content:cleanCmd(line.replace('⌈SSEC⌉','')), bold:false, scale:1.0, ssecIndent:40}); continue; }
-                if (line.startsWith('⌈SSSEC⌉')){ blocks.push({type:'subsec', content:cleanCmd(line.replace('⌈SSSEC⌉','')),bold:false, scale:1.0, ssecIndent:70}); continue; }
-                if (line.startsWith('⌈MATH⌉')) {
-                    // Limpiar marcadores de formato que puedan haberse colado en el contenido math
-                    // (ej: \fbox{$...$} genera ⌈BOX⌉ dentro del bloque MATH)
-                    let mathContent = line.replace('⌈MATH⌉', '')
-                        .replace(/⌈\/?BOX⌉/g, '')   // fbox dentro de math → solo el contenido
-                        .replace(/⌈\/?[A-Z]+⌉/g, ''); // cualquier otro marcador residual
-                    blocks.push({type:'math', content: mathContent});
-                    continue;
+            function splitMdInline(text) {
+                // Tokeniza la línea en segmentos con estilos
+                const segments = [];
+                let remaining = text;
+                // Estado actual de estilos
+                let bold = false, italic = false, underline = false, mono = false;
+                let buf = '';
+
+                const flush = () => {
+                    if (buf) segments.push({ text: buf, bold, italic, underline, mono });
+                    buf = '';
+                };
+
+                // Parser simple con regex secuencial
+                // Orden: ** antes que *, __ antes que _
+                const patterns = [
+                    { re: /^\*\*(.+?)\*\*/, toggle: 'bold' },
+                    { re: /^\*(.+?)\*/, toggle: 'italic' },
+                    { re: /^__(.+?)__/, toggle: 'underline' },
+                    { re: /^_(.+?)_/, toggle: 'italic' },
+                    { re: /^`(.+?)`/, toggle: 'mono' },
+                    { re: /^<br\s*\/?>/i, br: true },
+                ];
+
+                let pos = 0;
+                while (pos < remaining.length) {
+                    let matched = false;
+                    for (const pat of patterns) {
+                        const m = remaining.slice(pos).match(pat.re);
+                        if (m) {
+                            flush();
+                            if (pat.br) {
+                                segments.push({ br: true });
+                            } else {
+                                segments.push({
+                                    text: m[1],
+                                    bold: pat.toggle === 'bold',
+                                    italic: pat.toggle === 'italic',
+                                    underline: pat.toggle === 'underline',
+                                    mono: pat.toggle === 'mono'
+                                });
+                            }
+                            pos += m[0].length;
+                            matched = true; break;
+                        }
+                    }
+                    if (!matched) { buf += remaining[pos]; pos++; }
                 }
-                if (line.startsWith('⌈CENTER⌉')){ blocks.push({type:'text', content:cleanCmd(line.replace('⌈CENTER⌉','')), centered:true}); continue; }
-                parseInlineBlocks(line, blocks);
-                // Separador de línea: evita que bloques inline de líneas distintas se encadenen
-                blocks.push({type:'nl'});
+                flush();
+                return segments;
             }
-            return blocks;
-        }
 
-        // =========================================================
-        //  PREPROCESSOR MIXTO
-        // =========================================================
-        function preprocessMixed(raw) {
-            // Primero pasa por LaTeX, luego interpreta Markdown en texto plano
-            // Estrategia: identificar líneas que son puro LaTeX vs. puro Markdown
-            // Simple: correr LaTeX preprocessor pero antes manejar Markdown básico
-            let text = raw;
-            // Convertir Markdown headings antes de LaTeX si no hay \section
-            if (!text.includes('\\section') && !text.includes('\\subsection')) {
-                text = text.replace(/^###\s+(.*)$/mg, '\\subsubsection{$1}');
-                text = text.replace(/^##\s+(.*)$/mg, '\\subsection{$1}');
-                text = text.replace(/^#\s+(.*)$/mg, '\\section{$1}');
-            }
-            // Markdown bold/italic → LaTeX si no hay textbf/textit
-            text = text.replace(/\*\*(.+?)\*\*/g, '\\textbf{$1}');
-            text = text.replace(/\*(.+?)\*/g, '\\textit{$1}');
-            text = text.replace(/__(.+?)__/g, '\\underline{$1}');
-            // Regla horizontal
-            text = text.replace(/^[-*_]{3,}$/mg, '\\rule{0}{0}');
-            return preprocessLatex(text);
-        }
+            // =========================================================
+            //  LATEX PREPROCESSOR (mejorado)
+            // =========================================================
+            function preprocessLatex(raw) {
+                let text = raw;
 
-        function cleanCmd(s) { return s.replace(/\\[,;:!]/g, ' ').replace(/\\\\/g, ' ').trim(); }
-
-        function parseInlineBlocks(line, blocks) {
-            const parts = line.split(/(⌈\/?[A-Z]+⌉)/);
-            let bold=false, italic=false, underline=false, boxed=false;
-            for (const p of parts) {
-                if (p === '⌈B⌉')    { bold=true; continue; }
-                if (p === '⌈/B⌉')   { bold=false; continue; }
-                if (p === '⌈I⌉')    { italic=true; continue; }
-                if (p === '⌈/I⌉')   { italic=false; continue; }
-                if (p === '⌈U⌉')    { underline=true; continue; }
-                if (p === '⌈/U⌉')   { underline=false; continue; }
-                if (p === '⌈BOX⌉')  { boxed=true; continue; }
-                if (p === '⌈/BOX⌉') { boxed=false; continue; }
-                if (p === '⌈RULE⌉') { blocks.push({type:'rule'}); continue; }
-                const cleaned = p.trim();
-                if (cleaned) blocks.push({type: boxed ? 'boxed' : 'text', content:cleaned, bold, italic, underline, inline:true});
-            }
-        }
-
-        function findBrace(s, i) {
-            if (s[i] !== '{') return -1;
-            let d = 1;
-            for (let j=i+1; j<s.length; j++) {
-                if (s[j]==='{') d++; else if (s[j]==='}') { d--; if(d===0) return j; }
-            } return -1;
-        }
-
-        // =========================================================
-        //  TOKENIZER (LaTeX math)
-        // =========================================================
-        function tokenize(str) {
-            for (const k of SYM_KEYS) str = str.split(k).join(SYM[k]);
-            str = str.replace(/\$\$/g,'').replace(/\$/g,'');
-            const tokens=[]; let i=0, buf='';
-            const flush = () => { if(buf){tokens.push({t:'text',v:buf});buf='';} };
-
-            while (i < str.length) {
-                if (str.startsWith('\\sqrt', i)) {
-                    flush(); let j=i+5;
-                    while(j<str.length && str[j]===' ') j++;
-                    if (j<str.length && str[j]==='{') { const e=findBrace(str,j); if(e!==-1){tokens.push({t:'sqrt',inner:tokenize(str.substring(j+1,e))});i=e+1;continue;} }
-                    if (j<str.length) { tokens.push({t:'sqrt',inner:[{t:'text',v:str[j]}]});i=j+1;continue; }
-                    buf+='√'; i=j; continue;
+                // 0. Cortar el preámbulo: todo lo que está antes de \begin{document}
+                //    Los documentos LaTeX reales tienen mucho basura en el preámbulo que no queremos renderizar
+                const docIdx = text.indexOf('\\begin{document}');
+                if (docIdx !== -1) {
+                    text = text.substring(docIdx + '\\begin{document}'.length);
                 }
-                if (str.startsWith('\\frac', i)) {
-                    flush(); let j=i+5;
-                    while(j<str.length && str[j]===' ') j++;
-                    if (j<str.length && str[j]==='{') {
-                        const e1=findBrace(str,j);
-                        if (e1!==-1) {
-                            let k = e1+1;
-                            while(k<str.length && str[k]===' ') k++;
-                            if (k<str.length && str[k]==='{') {
-                                const e2=findBrace(str,k);
-                                if (e2!==-1) { tokens.push({t:'frac',num:tokenize(str.substring(j+1,e1)),den:tokenize(str.substring(k+1,e2))});i=e2+1;continue; }
+
+                // 1. Eliminar comentarios LaTeX
+                text = text.replace(/(?<!\\)%[^\n]*/g, '');
+
+                // 2. Eliminar comandos de estructura de documento
+                text = text.replace(/\\documentclass(\[.*?\])?\{[^}]*\}/g, '');
+                text = text.replace(/\\usepackage(\[.*?\])?\{[^}]*\}/g, '');
+                text = text.replace(/\\begin\{document\}/g, '');
+                text = text.replace(/\\end\{document\}/g, '');
+                text = text.replace(/\\maketitle/g, '');
+                text = text.replace(/\\title\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
+                text = text.replace(/\\author\{([^}]*)\}/g, '\n$1\n');
+                text = text.replace(/\\date\{([^}]*)\}/g, '\n$1\n');
+
+                // 3. Comandos de página y layout
+                text = text.replace(/\\(?:thispagestyle|pagestyle|fancyhf|fancyhead|fancyfoot)(\{[^}]*\}|\[[^\]]*\]){0,3}/g, '');
+                text = text.replace(/\\(?:newpage|clearpage|pagebreak)/g, '\n⌈PAGEBREAK⌉\n');
+                text = text.replace(/\\(?:noindent|indent)/g, '');
+                text = text.replace(/\\(?:centering)/g, '');
+
+                // 4. Espaciado vertical
+                text = text.replace(/\\vspace\*?\{[^}]*\}/g, '\n⌈VS⌉\n');
+                text = text.replace(/\\medskip/g, '\n⌈VS⌉\n');
+                text = text.replace(/\\bigskip/g, '\n⌈VS⌉\n');
+                text = text.replace(/\\smallskip/g, '\n⌈VS⌉\n');
+                text = text.replace(/\\vfill/g, '\n⌈VS⌉\n');
+
+                // 5. Espaciado horizontal
+                text = text.replace(/\\hspace\*?\{[^}]*\}/g, '   ');
+                text = text.replace(/\\hfill/g, '   ');
+                text = text.replace(/\\quad/g, '   ').replace(/\\qquad/g, '      ');
+                text = text.replace(/\\,/g, ' ').replace(/\\;/g, '  ').replace(/\\:/g, '  ').replace(/\\!/g, '');
+
+                // 6. Saltos de línea
+                text = text.replace(/\\\\(\[\d+(?:pt|cm|mm)\])?/g, '\n');
+                text = text.replace(/\\(?:newline|linebreak|br)/g, '\n');
+                // <br> de HTML que puedan estar en el texto
+                text = text.replace(/<br\s*\/?>/gi, '\n');
+
+                // 7. Entornos matemáticos
+                text = text.replace(/\\begin\{align\*?\}([\s\S]*?)\\end\{align\*?\}/g, (_, inner) =>
+                    '\n' + inner.split(/\\\\/).map(l => l.replace(/&/g, ' ').trim()).filter(l => l).map(l => '⌈MATH⌉' + l).join('\n') + '\n');
+                text = text.replace(/\\begin\{equation\*?\}([\s\S]*?)\\end\{equation\*?\}/g, (_, inner) =>
+                    '\n⌈MATH⌉' + inner.replace(/\\\\/g, ' ').trim() + '\n');
+                text = text.replace(/\\begin\{gather\*?\}([\s\S]*?)\\end\{gather\*?\}/g, (_, inner) =>
+                    '\n' + inner.split(/\\\\/).map(l => l.trim()).filter(l => l).map(l => '⌈MATH⌉' + l).join('\n') + '\n');
+                // Modo inline $...$ y $$...$$
+                text = text.replace(/\$\$([^\$]+)\$\$/g, '\n⌈MATH⌉$1\n');
+                // Los $ inline los dejamos para tokenize
+
+                // 8. Otros entornos
+                text = text.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, (_, inner) =>
+                    '\n⌈CENTER⌉' + inner.trim() + '\n');
+                text = text.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (_, inner) => {
+                    return '\n' + inner.replace(/\\item\s*/g, '• ') + '\n';
+                });
+                text = text.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, (_, inner) => {
+                    let n = 0; return '\n' + inner.replace(/\\item\s*/g, () => (++n) + '. ') + '\n';
+                });
+                // Ignorar otros entornos desconocidos (solo quitar el begin/end)
+                text = text.replace(/\\begin\{[^}]*\}/g, '');
+                text = text.replace(/\\end\{[^}]*\}/g, '');
+
+                // 9. Secciones
+                text = text.replace(/\\section\*?\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
+                text = text.replace(/\\subsection\*?\{([^}]*)\}/g, '\n⌈SSEC⌉$1\n');
+                text = text.replace(/\\subsubsection\*?\{([^}]*)\}/g, '\n⌈SSSEC⌉$1\n');
+                text = text.replace(/\\paragraph\*?\{([^}]*)\}/g, '\n⌈SSEC⌉$1\n');
+                text = text.replace(/\\chapter\*?\{([^}]*)\}/g, '\n⌈SEC⌉$1\n');
+
+                // 10. Línea y regla
+                text = text.replace(/\\rule\{[^}]*\}\{[^}]*\}/g, '⌈RULE⌉');
+                text = text.replace(/\\hrule/g, '⌈RULE⌉');
+
+                // 11. Formatos de texto
+                text = text.replace(/\\fbox\{([\s\S]*?)\}/g, '⌈BOX⌉$1⌈/BOX⌉');
+                text = text.replace(/\\textbf\{([^}]*)\}/g, '⌈U⌉$1⌈/U⌉'); // negrita → subrayado manuscrito
+                text = text.replace(/\\textit\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
+                text = text.replace(/\\emph\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
+                text = text.replace(/\\underline\{([^}]*)\}/g, '⌈U⌉$1⌈/U⌉');
+                text = text.replace(/\\text\{([^}]*)\}/g, '$1');
+                text = text.replace(/\\mathrm\{([^}]*)\}/g, '$1');
+                text = text.replace(/\\mathbf\{([^}]*)\}/g, '⌈B⌉$1⌈/B⌉');
+                text = text.replace(/\\mathit\{([^}]*)\}/g, '⌈I⌉$1⌈/I⌉');
+
+                // 12. Paréntesis grandes
+                text = text.replace(/\\(?:bigl|bigr|Bigl|Bigr|left|right)\s*([([{\])}.|])/g, '$1');
+                text = text.replace(/\\(?:big|Big|bigg|Bigg)[lr]?\s*([([{\])}.|])/g, '$1');
+
+                // 13. Comandos residuales
+                text = text.replace(/\\(?:LaTeX|TeX)/g, 'LaTeX');
+                text = text.replace(/\\(?:textwidth|linewidth|columnwidth)/g, '');
+                text = text.replace(/\\(?:today)/g, new Date().toLocaleDateString('es'));
+
+                // Limpiar comandos con argumento (repetir para anidados)
+                for (let pass = 0; pass < 3; pass++) {
+                    text = text.replace(/\\(?!frac|sqrt)[a-zA-Z]+\{([^}]*)\}/g, '$1');
+                }
+                // Limpiar comandos sin argumento QUE NO SEAN símbolos LaTeX.
+                // Los símbolos (\sigma, \alpha, etc.) se dejan para que tokenize los sustituya
+                // con la fuente correcta (peso normal). Pre-sustituirlos aquí los dejaba
+                // en Unicode puro que la fuente de reserva renderizaba en negrilla.
+                const _symCmdSet = new Set(SYM_KEYS.map(k => k.slice(1)));
+                _symCmdSet.add('frac'); _symCmdSet.add('sqrt');
+                text = text.replace(/\\([a-zA-Z]+)/g, (m, cmd) => _symCmdSet.has(cmd) ? m : '');
+                // NOTA: Se eliminó la limpieza global de llaves aquí, porque rompía las 
+                // fracciones y raíces anidadas antes de llegar al tokenizer matemático.
+
+                // 14. Parsear bloques
+                const lines = text.split('\n');
+                const blocks = [];
+                for (const raw of lines) {
+                    const line = raw.trim();
+                    if (!line) { blocks.push({ type: 'vs', h: 8 }); continue; }
+                    if (line === '⌈VS⌉') { blocks.push({ type: 'vs', h: 20 }); continue; }
+                    if (line === '⌈RULE⌉') { blocks.push({ type: 'rule' }); continue; }
+                    if (line === '⌈PAGEBREAK⌉') { blocks.push({ type: 'pagebreak' }); continue; }
+                    if (line.startsWith('⌈SEC⌉')) { blocks.push({ type: 'text', content: cleanCmd(line.replace('⌈SEC⌉', '')), bold: false, scale: 1.0, centered: true }); continue; }
+                    if (line.startsWith('⌈SSEC⌉')) { blocks.push({ type: 'subsec', content: cleanCmd(line.replace('⌈SSEC⌉', '')), bold: false, scale: 1.0, ssecIndent: 40 }); continue; }
+                    if (line.startsWith('⌈SSSEC⌉')) { blocks.push({ type: 'subsec', content: cleanCmd(line.replace('⌈SSSEC⌉', '')), bold: false, scale: 1.0, ssecIndent: 70 }); continue; }
+                    if (line.startsWith('⌈MATH⌉')) {
+                        // Limpiar marcadores de formato que puedan haberse colado en el contenido math
+                        // (ej: \fbox{$...$} genera ⌈BOX⌉ dentro del bloque MATH)
+                        let mathContent = line.replace('⌈MATH⌉', '')
+                            .replace(/⌈\/?BOX⌉/g, '')   // fbox dentro de math → solo el contenido
+                            .replace(/⌈\/?[A-Z]+⌉/g, ''); // cualquier otro marcador residual
+                        blocks.push({ type: 'math', content: mathContent });
+                        continue;
+                    }
+                    if (line.startsWith('⌈CENTER⌉')) { blocks.push({ type: 'text', content: cleanCmd(line.replace('⌈CENTER⌉', '')), centered: true }); continue; }
+                    parseInlineBlocks(line, blocks);
+                    // Separador de línea: evita que bloques inline de líneas distintas se encadenen
+                    blocks.push({ type: 'nl' });
+                }
+                return blocks;
+            }
+
+            // =========================================================
+            //  PREPROCESSOR MIXTO
+            // =========================================================
+            function preprocessMixed(raw) {
+                // Primero pasa por LaTeX, luego interpreta Markdown en texto plano
+                // Estrategia: identificar líneas que son puro LaTeX vs. puro Markdown
+                // Simple: correr LaTeX preprocessor pero antes manejar Markdown básico
+                let text = raw;
+                // Convertir Markdown headings antes de LaTeX si no hay \section
+                if (!text.includes('\\section') && !text.includes('\\subsection')) {
+                    text = text.replace(/^###\s+(.*)$/mg, '\\subsubsection{$1}');
+                    text = text.replace(/^##\s+(.*)$/mg, '\\subsection{$1}');
+                    text = text.replace(/^#\s+(.*)$/mg, '\\section{$1}');
+                }
+                // Markdown bold/italic → LaTeX si no hay textbf/textit
+                text = text.replace(/\*\*(.+?)\*\*/g, '\\textbf{$1}');
+                text = text.replace(/\*(.+?)\*/g, '\\textit{$1}');
+                text = text.replace(/__(.+?)__/g, '\\underline{$1}');
+                // Regla horizontal
+                text = text.replace(/^[-*_]{3,}$/mg, '\\rule{0}{0}');
+                return preprocessLatex(text);
+            }
+
+            function cleanCmd(s) { return s.replace(/\\[,;:!]/g, ' ').replace(/\\\\/g, ' ').trim(); }
+
+            function parseInlineBlocks(line, blocks) {
+                const parts = line.split(/(⌈\/?[A-Z]+⌉)/);
+                let bold = false, italic = false, underline = false, boxed = false;
+                for (const p of parts) {
+                    if (p === '⌈B⌉') { bold = true; continue; }
+                    if (p === '⌈/B⌉') { bold = false; continue; }
+                    if (p === '⌈I⌉') { italic = true; continue; }
+                    if (p === '⌈/I⌉') { italic = false; continue; }
+                    if (p === '⌈U⌉') { underline = true; continue; }
+                    if (p === '⌈/U⌉') { underline = false; continue; }
+                    if (p === '⌈BOX⌉') { boxed = true; continue; }
+                    if (p === '⌈/BOX⌉') { boxed = false; continue; }
+                    if (p === '⌈RULE⌉') { blocks.push({ type: 'rule' }); continue; }
+                    const cleaned = p.trim();
+                    if (cleaned) blocks.push({ type: boxed ? 'boxed' : 'text', content: cleaned, bold, italic, underline, inline: true });
+                }
+            }
+
+            function findBrace(s, i) {
+                if (s[i] !== '{') return -1;
+                let d = 1;
+                for (let j = i + 1; j < s.length; j++) {
+                    if (s[j] === '{') d++; else if (s[j] === '}') { d--; if (d === 0) return j; }
+                } return -1;
+            }
+
+            // =========================================================
+            //  TOKENIZER (LaTeX math)
+            // =========================================================
+            function tokenize(str) {
+                for (const k of SYM_KEYS) str = str.split(k).join(SYM[k]);
+                str = str.replace(/\$\$/g, '').replace(/\$/g, '');
+                const tokens = []; let i = 0, buf = '';
+                const flush = () => { if (buf) { tokens.push({ t: 'text', v: buf }); buf = ''; } };
+
+                while (i < str.length) {
+                    if (str.startsWith('\\sqrt', i)) {
+                        flush(); let j = i + 5;
+                        while (j < str.length && str[j] === ' ') j++;
+                        if (j < str.length && str[j] === '{') { const e = findBrace(str, j); if (e !== -1) { tokens.push({ t: 'sqrt', inner: tokenize(str.substring(j + 1, e)) }); i = e + 1; continue; } }
+                        if (j < str.length) { tokens.push({ t: 'sqrt', inner: [{ t: 'text', v: str[j] }] }); i = j + 1; continue; }
+                        buf += '√'; i = j; continue;
+                    }
+                    if (str.startsWith('\\frac', i)) {
+                        flush(); let j = i + 5;
+                        while (j < str.length && str[j] === ' ') j++;
+                        if (j < str.length && str[j] === '{') {
+                            const e1 = findBrace(str, j);
+                            if (e1 !== -1) {
+                                let k = e1 + 1;
+                                while (k < str.length && str[k] === ' ') k++;
+                                if (k < str.length && str[k] === '{') {
+                                    const e2 = findBrace(str, k);
+                                    if (e2 !== -1) { tokens.push({ t: 'frac', num: tokenize(str.substring(j + 1, e1)), den: tokenize(str.substring(k + 1, e2)) }); i = e2 + 1; continue; }
+                                }
                             }
                         }
+                        if (j < str.length - 1) { tokens.push({ t: 'frac', num: [{ t: 'text', v: str[j] }], den: [{ t: 'text', v: str[j + 1] }] }); i = j + 2; continue; }
+                        buf += 'frac'; i = j; continue;
                     }
-                    if (j<str.length-1) { tokens.push({t:'frac',num:[{t:'text',v:str[j]}],den:[{t:'text',v:str[j+1]}]});i=j+2;continue; }
-                    buf+='frac'; i=j; continue;
+                    if (str[i] === '^') {
+                        flush(); let j = i + 1, et;
+                        while (j < str.length && str[j] === ' ') j++;
+                        if (j < str.length && str[j] === '{') { const e = findBrace(str, j); if (e !== -1) { et = tokenize(str.substring(j + 1, e)); i = e + 1; } else { buf += '^'; i = j; continue; } }
+                        else if (j < str.length) { et = [{ t: 'text', v: str[j] }]; i = j + 1; } else { buf += '^'; i = j; continue; }
+                        tokens.push({ t: 'sup', exp: et }); continue;
+                    }
+                    if (str[i] === '_') {
+                        flush(); let j = i + 1, st;
+                        while (j < str.length && str[j] === ' ') j++;
+                        if (j < str.length && str[j] === '{') { const e = findBrace(str, j); if (e !== -1) { st = tokenize(str.substring(j + 1, e)); i = e + 1; } else { buf += '_'; i = j; continue; } }
+                        else if (j < str.length) { st = [{ t: 'text', v: str[j] }]; i = j + 1; } else { buf += '_'; i = j; continue; }
+                        tokens.push({ t: 'sub', sub: st }); continue;
+                    }
+                    if (str[i] === '{' || str[i] === '}') { i++; continue; }
+                    buf += str[i]; i++;
                 }
-                if (str[i]==='^') {
-                    flush(); let j=i+1, et;
-                    while(j<str.length && str[j]===' ') j++;
-                    if (j<str.length && str[j]==='{'){const e=findBrace(str,j);if(e!==-1){et=tokenize(str.substring(j+1,e));i=e+1;}else{buf+='^';i=j;continue;}}
-                    else if (j<str.length) { et=[{t:'text',v:str[j]}]; i=j+1; } else { buf+='^'; i=j; continue; }
-                    tokens.push({t:'sup',exp:et}); continue;
+                flush(); return tokens;
+            }
+
+            // =========================================================
+            //  CANVAS DRAWING
+            // =========================================================
+            function drawBg(ctx, type) {
+                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, PW, PH);
+                if (type === 'lined') {
+                    ctx.lineWidth = 1; ctx.strokeStyle = '#e2e8f0';
+                    for (let y = MT; y < PH - MB + 30; y += 35) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(PW, y); ctx.stroke(); }
+                    ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.moveTo(ML - 25, 0); ctx.lineTo(ML - 25, PH); ctx.stroke();
+                } else if (type === 'grid') {
+                    ctx.lineWidth = 0.5; ctx.strokeStyle = '#cbd5e1';
+                    for (let y = 0; y < PH; y += 25) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(PW, y); ctx.stroke(); }
+                    for (let x = 0; x < PW; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, PH); ctx.stroke(); }
                 }
-                if (str[i]==='_') {
-                    flush(); let j=i+1, st;
-                    while(j<str.length && str[j]===' ') j++;
-                    if (j<str.length && str[j]==='{'){const e=findBrace(str,j);if(e!==-1){st=tokenize(str.substring(j+1,e));i=e+1;}else{buf+='_';i=j;continue;}}
-                    else if (j<str.length) { st=[{t:'text',v:str[j]}]; i=j+1; } else { buf+='_'; i=j; continue; }
-                    tokens.push({t:'sub',sub:st}); continue;
+            }
+
+            let pageIndex = 0, activePages = [];
+            function createPage() {
+                const c = document.createElement('canvas'); c.width = PW; c.height = PH;
+                c.className = 'page-container max-w-full md:max-w-[80%] h-auto border border-slate-200 rounded-sm';
+                c.dataset.pageIndex = pageIndex++;
+                pagesWrapper.appendChild(c);
+                const ctx = c.getContext('2d'); drawBg(ctx, paperSelect.value);
+                activePages.push(ctx);
+                return { canvas: c, ctx };
+            }
+
+            // =========================================================
+            //  WYSIWYG MEJORADO
+            // =========================================================
+            let clickBoxes = []; // { pageIdx, x, y, w, h, text, rawText }
+            let currentEditBox = null;
+
+            function closeEditOverlay() {
+                editOverlay.style.display = 'none';
+                currentEditBox = null;
+            }
+
+            // Mapa SYM inverso: Unicode → comando LaTeX (para buscar en la fuente)
+            function buildRevSym() {
+                const rev = {};
+                for (const k of SYM_KEYS) { if (SYM[k] && !rev[SYM[k]]) rev[SYM[k]] = k; }
+                return rev;
+            }
+            // Convierte texto renderizado a su posible equivalente LaTeX para buscar en la fuente
+            function toLatexSearch(s) {
+                const rev = buildRevSym();
+                let r = s;
+                for (const [uni, cmd] of Object.entries(rev)) {
+                    if (uni) r = r.split(uni).join(cmd);
                 }
-                if (str[i]==='{'||str[i]==='}') { i++; continue; }
-                buf += str[i]; i++;
+                return r;
             }
-            flush(); return tokens;
-        }
-
-        // =========================================================
-        //  CANVAS DRAWING
-        // =========================================================
-        function drawBg(ctx, type) {
-            ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH);
-            if (type==='lined') {
-                ctx.lineWidth=1; ctx.strokeStyle='#e2e8f0';
-                for(let y=MT;y<PH-MB+30;y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(PW,y);ctx.stroke();}
-                ctx.strokeStyle='#fca5a5'; ctx.lineWidth=1.5;
-                ctx.beginPath(); ctx.moveTo(ML-25,0); ctx.lineTo(ML-25,PH); ctx.stroke();
-            } else if (type==='grid') {
-                ctx.lineWidth=0.5; ctx.strokeStyle='#cbd5e1';
-                for(let y=0;y<PH;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(PW,y);ctx.stroke();}
-                for(let x=0;x<PW;x+=25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,PH);ctx.stroke();}
-            }
-        }
-
-        let pageIndex=0, activePages=[];
-        function createPage() {
-            const c = document.createElement('canvas'); c.width=PW; c.height=PH;
-            c.className='page-container max-w-full md:max-w-[80%] h-auto border border-slate-200 rounded-sm';
-            c.dataset.pageIndex = pageIndex++;
-            pagesWrapper.appendChild(c);
-            const ctx = c.getContext('2d'); drawBg(ctx, paperSelect.value);
-            activePages.push(ctx);
-            return {canvas:c, ctx};
-        }
-
-        // =========================================================
-        //  WYSIWYG MEJORADO
-        // =========================================================
-        let clickBoxes = []; // { pageIdx, x, y, w, h, text, rawText }
-        let currentEditBox = null;
-
-        function closeEditOverlay() {
-            editOverlay.style.display = 'none';
-            currentEditBox = null;
-        }
-
-        // Mapa SYM inverso: Unicode → comando LaTeX (para buscar en la fuente)
-        function buildRevSym() {
-            const rev = {};
-            for (const k of SYM_KEYS) { if (SYM[k] && !rev[SYM[k]]) rev[SYM[k]] = k; }
-            return rev;
-        }
-        // Convierte texto renderizado a su posible equivalente LaTeX para buscar en la fuente
-        function toLatexSearch(s) {
-            const rev = buildRevSym();
-            let r = s;
-            for (const [uni, cmd] of Object.entries(rev)) {
-                if (uni) r = r.split(uni).join(cmd);
-            }
-            return r;
-        }
-        // Busca un texto en la fuente: prueba directo, luego LaTeX, luego cerca del cursor
-        function findInSource(searchText, hint) {
-            const src = textInput.value;
-            const curPos = hint !== undefined ? hint : textInput.selectionStart;
-            // 1. Búsqueda directa cerca del cursor
-            const R = 800;
-            let idx = src.indexOf(searchText, Math.max(0, curPos - R));
-            if (idx !== -1) return { idx, len: searchText.length };
-            // 2. Búsqueda directa global
-            idx = src.indexOf(searchText);
-            if (idx !== -1) return { idx, len: searchText.length };
-            // 3. Intentar con equivalente LaTeX
-            const ltx = toLatexSearch(searchText);
-            if (ltx !== searchText) {
-                idx = src.indexOf(ltx, Math.max(0, curPos - R));
-                if (idx !== -1) return { idx, len: ltx.length };
-                idx = src.indexOf(ltx);
-                if (idx !== -1) return { idx, len: ltx.length };
-            }
-            return null;
-        }
-
-        function openEditOverlay(box, clientX, clientY) {
-            currentEditBox = box;
-            editInput.value = box.rawText || box.text;
-            editOverlay.style.display = 'block';
-
-            // Posicionar usando coordenadas de VIEWPORT (clientX/Y) — overlay es position:fixed
-            const ow = 290, oh = 115;
-            let left = clientX - 10;
-            let top = clientY - oh - 10;
-            if (left + ow > window.innerWidth) left = window.innerWidth - ow - 10;
-            if (left < 10) left = 10;
-            if (top < 10) top = clientY + 24;
-            editOverlay.style.left = left + 'px';
-            editOverlay.style.top = top + 'px';
-
-            // Sincronizar cursor en la fuente con búsqueda inteligente
-            const searchText = box.rawText || box.text;
-            const found = findInSource(searchText);
-            if (found) {
-                textInput.setSelectionRange(found.idx, found.idx + found.len);
-                // Scroll preciso al número de línea encontrado
-                const srcText = textInput.value;
-                const linesBefore = srcText.substring(0, found.idx).split('\n');
-                const totalLines = srcText.split('\n').length || 1;
-                const lineH_txt = textInput.scrollHeight / totalLines;
-                textInput.scrollTop = Math.max(0, (linesBefore.length - 2) * lineH_txt);
-                // Destello amarillo en el borde del textarea para indicar la posición
-                textInput.style.outline = '3px solid #f59e0b';
-                textInput.style.outlineOffset = '-2px';
-                setTimeout(() => { textInput.style.outline = ''; textInput.style.outlineOffset = ''; }, 1200);
+            // Busca un texto en la fuente: prueba directo, luego LaTeX, luego cerca del cursor
+            function findInSource(searchText, hint) {
+                const src = textInput.value;
+                const curPos = hint !== undefined ? hint : textInput.selectionStart;
+                // 1. Búsqueda directa cerca del cursor
+                const R = 800;
+                let idx = src.indexOf(searchText, Math.max(0, curPos - R));
+                if (idx !== -1) return { idx, len: searchText.length };
+                // 2. Búsqueda directa global
+                idx = src.indexOf(searchText);
+                if (idx !== -1) return { idx, len: searchText.length };
+                // 3. Intentar con equivalente LaTeX
+                const ltx = toLatexSearch(searchText);
+                if (ltx !== searchText) {
+                    idx = src.indexOf(ltx, Math.max(0, curPos - R));
+                    if (idx !== -1) return { idx, len: ltx.length };
+                    idx = src.indexOf(ltx);
+                    if (idx !== -1) return { idx, len: ltx.length };
+                }
+                return null;
             }
 
-            setTimeout(() => { editInput.focus(); editInput.select(); }, 50);
-        }
+            function openEditOverlay(box, clientX, clientY) {
+                currentEditBox = box;
+                editInput.value = box.rawText || box.text;
+                editOverlay.style.display = 'block';
 
-        function applyEdit() {
-            if (!currentEditBox) return;
-            const oldText = currentEditBox.rawText || currentEditBox.text;
-            const newText = editInput.value;
-            if (oldText !== newText) {
-                let text = textInput.value;
-                const found = findInSource(oldText, textInput.selectionStart);
+                // Posicionar usando coordenadas de VIEWPORT (clientX/Y) — overlay es position:fixed
+                const ow = 290, oh = 115;
+                let left = clientX - 10;
+                let top = clientY - oh - 10;
+                if (left + ow > window.innerWidth) left = window.innerWidth - ow - 10;
+                if (left < 10) left = 10;
+                if (top < 10) top = clientY + 24;
+                editOverlay.style.left = left + 'px';
+                editOverlay.style.top = top + 'px';
+
+                // Sincronizar cursor en la fuente con búsqueda inteligente
+                const searchText = box.rawText || box.text;
+                const found = findInSource(searchText);
                 if (found) {
-                    textInput.value = text.substring(0, found.idx) + newText + text.substring(found.idx + found.len);
-                    textInput.focus();
-                    textInput.selectionStart = textInput.selectionEnd = found.idx + newText.length;
-                    triggerRender();
-                } else {
-                    console.warn('No se encontró el texto (ni directo ni LaTeX):', oldText);
+                    textInput.setSelectionRange(found.idx, found.idx + found.len);
+                    // Scroll preciso al número de línea encontrado
+                    const srcText = textInput.value;
+                    const linesBefore = srcText.substring(0, found.idx).split('\n');
+                    const totalLines = srcText.split('\n').length || 1;
+                    const lineH_txt = textInput.scrollHeight / totalLines;
+                    textInput.scrollTop = Math.max(0, (linesBefore.length - 2) * lineH_txt);
+                    // Destello amarillo en el borde del textarea para indicar la posición
+                    textInput.style.outline = '3px solid #f59e0b';
+                    textInput.style.outlineOffset = '-2px';
+                    setTimeout(() => { textInput.style.outline = ''; textInput.style.outlineOffset = ''; }, 1200);
                 }
-            }
-            closeEditOverlay();
-        }
 
-        editConfirm.addEventListener('click', applyEdit);
-        editCancel.addEventListener('click', closeEditOverlay);
-        editInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') { e.preventDefault(); applyEdit(); }
-            if (e.key === 'Escape') closeEditOverlay();
-        });
-        // Cerrar al clic fuera del overlay
-        document.addEventListener('mousedown', e => {
-            if (editOverlay.style.display !== 'none' && !editOverlay.contains(e.target)) {
+                setTimeout(() => { editInput.focus(); editInput.select(); }, 50);
+            }
+
+            function applyEdit() {
+                if (!currentEditBox) return;
+                const oldText = currentEditBox.rawText || currentEditBox.text;
+                const newText = editInput.value;
+                if (oldText !== newText) {
+                    let text = textInput.value;
+                    const found = findInSource(oldText, textInput.selectionStart);
+                    if (found) {
+                        textInput.value = text.substring(0, found.idx) + newText + text.substring(found.idx + found.len);
+                        textInput.focus();
+                        textInput.selectionStart = textInput.selectionEnd = found.idx + newText.length;
+                        triggerRender();
+                    } else {
+                        console.warn('No se encontró el texto (ni directo ni LaTeX):', oldText);
+                    }
+                }
                 closeEditOverlay();
             }
-        });
 
-        function setupClickHandlers() {
-            document.querySelectorAll('.page-container').forEach(c => {
-                c.addEventListener('mousemove', e => {
-                    const rect = c.getBoundingClientRect();
-                    const scaleX = c.width / rect.width;
-                    const scaleY = c.height / rect.height;
-                    const cx = (e.clientX - rect.left) * scaleX;
-                    const cy = (e.clientY - rect.top) * scaleY;
-                    const pi = parseInt(c.dataset.pageIndex);
-                    const box = clickBoxes.find(b => b.pageIdx===pi && cx>=b.x-8 && cx<=b.x+b.w+8 && cy>=b.y-12 && cy<=b.y+b.h+8);
-                    if (box && box.text && box.text.trim()) {
-                        canvasHint.style.display = 'block';
-                        canvasHint.style.left = e.pageX + 'px';
-                        canvasHint.style.top = e.pageY + 'px';
-                        c.style.cursor = 'text';
-                    } else {
-                        canvasHint.style.display = 'none';
-                        c.style.cursor = 'crosshair';
-                    }
-                });
-                c.addEventListener('mouseleave', () => { canvasHint.style.display='none'; });
-
-                c.addEventListener('click', e => {
-                    const rect = c.getBoundingClientRect();
-                    const scaleX = c.width / rect.width;
-                    const scaleY = c.height / rect.height;
-                    const cx = (e.clientX - rect.left) * scaleX;
-                    const cy = (e.clientY - rect.top) * scaleY;
-                    const pi = parseInt(c.dataset.pageIndex);
-                    const box = clickBoxes.find(b => b.pageIdx===pi && cx>=b.x-8 && cx<=b.x+b.w+8 && cy>=b.y-12 && cy<=b.y+b.h+8);
-                    if (box && box.text && box.text.trim()) {
-                        // Usar clientX/Y (viewport) porque el overlay tiene position:fixed
-                        openEditOverlay(box, e.clientX, e.clientY);
-                    } else {
-                        closeEditOverlay();
-                    }
-                });
+            editConfirm.addEventListener('click', applyEdit);
+            editCancel.addEventListener('click', closeEditOverlay);
+            editInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); applyEdit(); }
+                if (e.key === 'Escape') closeEditOverlay();
             });
-        }
-
-        // =========================================================
-        //  RENDER ENGINE
-        // =========================================================
-        function executeRender() {
-            pagesWrapper.innerHTML = ''; pageIndex=0; clickBoxes=[]; activePages=[];
-            closeEditOverlay();
-            const raw = textInput.value;
-            if (!raw.trim()) { createPage(); setupClickHandlers(); return; }
-
-            // Seleccionar preprocessor según modo
-            let blocks;
-            if (currentMode === 'markdown') blocks = preprocessMarkdown(raw);
-            else if (currentMode === 'mixed')    blocks = preprocessMixed(raw);
-            else                                  blocks = preprocessLatex(raw);
-
-            // Config
-            const fontSize = parseInt(sizeRange.value);
-            const fontName = fontSelect.value;
-            const fontFamily = `'${fontName}', 'Caveat', 'Comic Sans MS', 'Segoe UI', sans-serif`;
-            const color = colorSelect.value;
-            const lineH = fontSize * 1.55;
-            const wScale = parseInt(widthRange.value) / 100;
-            const tiltFactor = parseInt(tiltRange.value) / 100;
-            const jitter = parseInt(jitterRange.value) / 100;
-            const wobble = parseInt(wobbleRange.value) / 100;
-            const mathIndent = parseInt(indentRange.value);
-            const maxX = PW - MR;
-
-            let page=createPage(), ctx=page.ctx;
-            let curX=ML, curY=MT+fontSize;
-            let currentPageIdx=0;
-
-            window._pencilPatterns = window._pencilPatterns || {};
-            let currentFillStyle = color;
-            if (pencilEffectChk && pencilEffectChk.checked) {
-                if (!window._pencilPatterns[color]) {
-                    const pc = document.createElement('canvas'); pc.width = 64; pc.height = 64;
-                    const px = pc.getContext('2d');
-                    let r = parseInt(color.slice(1,3), 16) || 0;
-                    let g = parseInt(color.slice(3,5), 16) || 0;
-                    let b = parseInt(color.slice(5,7), 16) || 0;
-                    const id = px.createImageData(64,64); const d = id.data;
-                    for (let i = 0; i < d.length; i += 4) {
-                        d[i]=r; d[i+1]=g; d[i+2]=b;
-                        d[i+3] = Math.random() > 0.5 ? (150 + Math.random()*105) : (10 + Math.random()*40);
-                    }
-                    px.putImageData(id, 0, 0);
-                    window._pencilPatterns[color] = pc;
+            // Cerrar al clic fuera del overlay
+            document.addEventListener('mousedown', e => {
+                if (editOverlay.style.display !== 'none' && !editOverlay.contains(e.target)) {
+                    closeEditOverlay();
                 }
-                currentFillStyle = ctx.createPattern(window._pencilPatterns[color], 'repeat');
+            });
+
+            function setupClickHandlers() {
+                document.querySelectorAll('.page-container').forEach(c => {
+                    c.addEventListener('mousemove', e => {
+                        const rect = c.getBoundingClientRect();
+                        const scaleX = c.width / rect.width;
+                        const scaleY = c.height / rect.height;
+                        const cx = (e.clientX - rect.left) * scaleX;
+                        const cy = (e.clientY - rect.top) * scaleY;
+                        const pi = parseInt(c.dataset.pageIndex);
+                        const box = clickBoxes.find(b => b.pageIdx === pi && cx >= b.x - 8 && cx <= b.x + b.w + 8 && cy >= b.y - 12 && cy <= b.y + b.h + 8);
+                        if (box && box.text && box.text.trim()) {
+                            canvasHint.style.display = 'block';
+                            canvasHint.style.left = e.pageX + 'px';
+                            canvasHint.style.top = e.pageY + 'px';
+                            c.style.cursor = 'text';
+                        } else {
+                            canvasHint.style.display = 'none';
+                            c.style.cursor = 'crosshair';
+                        }
+                    });
+                    c.addEventListener('mouseleave', () => { canvasHint.style.display = 'none'; });
+
+                    c.addEventListener('click', e => {
+                        const rect = c.getBoundingClientRect();
+                        const scaleX = c.width / rect.width;
+                        const scaleY = c.height / rect.height;
+                        const cx = (e.clientX - rect.left) * scaleX;
+                        const cy = (e.clientY - rect.top) * scaleY;
+                        const pi = parseInt(c.dataset.pageIndex);
+                        const box = clickBoxes.find(b => b.pageIdx === pi && cx >= b.x - 8 && cx <= b.x + b.w + 8 && cy >= b.y - 12 && cy <= b.y + b.h + 8);
+                        if (box && box.text && box.text.trim()) {
+                            // Usar clientX/Y (viewport) porque el overlay tiene position:fixed
+                            openEditOverlay(box, e.clientX, e.clientY);
+                        } else {
+                            closeEditOverlay();
+                        }
+                    });
+                });
             }
 
-            const makeFont = (size, bold, italic, mono, isGreek = false) => {
-                const fWeight = fallbackWeightRange ? fallbackWeightRange.value : '400';
-                let prefix = bold ? 'bold ' : '';
-                if (italic) prefix += 'italic ';
-                const fw = isGreek ? fWeight + ' ' : prefix;
-                const family = mono ? `'Courier New', monospace` : (isGreek ? `${fontFamily}, "Segoe UI", "Helvetica Neue", sans-serif` : fontFamily);
-                return `${fw}${size}px ${family}`;
-            };
+            // =========================================================
+            //  RENDER ENGINE
+            // =========================================================
+            function executeRender() {
+                pagesWrapper.innerHTML = ''; pageIndex = 0; clickBoxes = []; activePages = [];
+                closeEditOverlay();
+                const raw = textInput.value;
+                if (!raw.trim()) { createPage(); setupClickHandlers(); return; }
 
-            const checkPage = () => {
-                if (curY > PH-MB+10) {
-                    page=createPage(); ctx=page.ctx; currentPageIdx=pageIndex-1;
-                    if (pencilEffectChk && pencilEffectChk.checked) currentFillStyle = ctx.createPattern(window._pencilPatterns[color], 'repeat');
-                    ctx.fillStyle = currentFillStyle; ctx.textBaseline='alphabetic';
-                    curY=MT+fontSize;
+                // Seleccionar preprocessor según modo
+                let blocks;
+                if (currentMode === 'markdown') blocks = preprocessMarkdown(raw);
+                else if (currentMode === 'mixed') blocks = preprocessMixed(raw);
+                else blocks = preprocessLatex(raw);
+
+                // Config
+                const fontSize = parseInt(sizeRange.value);
+                const fontName = fontSelect.value;
+                const fontFamily = `'${fontName}', 'Caveat', 'Comic Sans MS', 'Segoe UI', sans-serif`;
+                const color = colorSelect.value;
+                const lineH = fontSize * 1.55;
+                const wScale = parseInt(widthRange.value) / 100;
+                const tiltFactor = parseInt(tiltRange.value) / 100;
+                const jitter = parseInt(jitterRange.value) / 100;
+                const wobble = parseInt(wobbleRange.value) / 100;
+                const mathIndent = parseInt(indentRange.value);
+                const maxX = PW - MR;
+
+                let page = createPage(), ctx = page.ctx;
+                let curX = ML, curY = MT + fontSize;
+                let currentPageIdx = 0;
+
+                window._pencilPatterns = window._pencilPatterns || {};
+                let currentFillStyle = color;
+                if (pencilEffectChk && pencilEffectChk.checked) {
+                    if (!window._pencilPatterns[color]) {
+                        const pc = document.createElement('canvas'); pc.width = 64; pc.height = 64;
+                        const px = pc.getContext('2d');
+                        let r = parseInt(color.slice(1, 3), 16) || 0;
+                        let g = parseInt(color.slice(3, 5), 16) || 0;
+                        let b = parseInt(color.slice(5, 7), 16) || 0;
+                        const id = px.createImageData(64, 64); const d = id.data;
+                        for (let i = 0; i < d.length; i += 4) {
+                            d[i] = r; d[i + 1] = g; d[i + 2] = b;
+                            d[i + 3] = Math.random() > 0.5 ? (150 + Math.random() * 105) : (10 + Math.random() * 40);
+                        }
+                        px.putImageData(id, 0, 0);
+                        window._pencilPatterns[color] = pc;
+                    }
+                    currentFillStyle = ctx.createPattern(window._pencilPatterns[color], 'repeat');
                 }
-            };
 
-            // Aplicar posible strip de acentos al texto antes de dibujar
-            const prepareText = (s) => maybeStripAccents(s);
+                const makeFont = (size, bold, italic, mono, isGreek = false) => {
+                    const fWeight = fallbackWeightRange ? fallbackWeightRange.value : '400';
+                    let prefix = bold ? 'bold ' : '';
+                    if (italic) prefix += 'italic ';
+                    const fw = isGreek ? fWeight + ' ' : prefix;
+                    const family = mono ? `'Courier New', monospace` : (isGreek ? `${fontFamily}, "Segoe UI", "Helvetica Neue", sans-serif` : fontFamily);
+                    return `${fw}${size}px ${family}`;
+                };
 
-            const drawChar = (ch, x, y, size, bold, italic, mono, lineStartX, lineTiltRads) => {
-                const mYOff=size*0.08*jitter, mXOff=size*0.02*jitter;
-                const yOff=(Math.random()*2-1)*mYOff, xOff=(Math.random()*2-1)*mXOff;
-                const sv=size*(1+(Math.random()*0.1-0.05)*jitter);
-                const rot=(Math.random()*2-1)*0.03*jitter;
-                const tiltYOffset=(x-lineStartX)*Math.tan(lineTiltRads);
-                ctx.save();
-                ctx.font=makeFont(sv,bold,italic,mono);
-                ctx.fillStyle=currentFillStyle;
-                ctx.translate(x+xOff, y+yOff+tiltYOffset);
-                ctx.rotate(rot); ctx.scale(wScale,1);
-                ctx.fillText(ch, 0, 0);
-                const gw = mainWeightRange ? parseInt(mainWeightRange.value)/10 : 0;
-                if (gw > 0 && ch.charCodeAt(0) <= 255) {
-                    ctx.lineWidth = gw;
-                    ctx.lineJoin = 'round';
-                    ctx.strokeStyle = currentFillStyle;
-                    ctx.strokeText(ch, 0, 0);
-                }
-                ctx.restore();
-            };
+                const checkPage = () => {
+                    if (curY > PH - MB + 10) {
+                        page = createPage(); ctx = page.ctx; currentPageIdx = pageIndex - 1;
+                        if (pencilEffectChk && pencilEffectChk.checked) currentFillStyle = ctx.createPattern(window._pencilPatterns[color], 'repeat');
+                        ctx.fillStyle = currentFillStyle; ctx.textBaseline = 'alphabetic';
+                        curY = MT + fontSize;
+                    }
+                };
 
-            const mTok = (toks, size, bold, italic, mono) => {
-                let w=0;
-                for (const t of toks) {
-                    if (t.t==='text') {
-                        for(const c of t.v) {
-                            const isGreek = c.charCodeAt(0) > 255;
-                            ctx.font=makeFont(size, isGreek ? false : bold, isGreek ? false : italic, mono, isGreek);
-                            w+=ctx.measureText(c).width*wScale;
+                // Aplicar posible strip de acentos al texto antes de dibujar
+                const prepareText = (s) => maybeStripAccents(s);
+
+                const drawChar = (ch, x, y, size, bold, italic, mono, lineStartX, lineTiltRads) => {
+                    const mYOff = size * 0.08 * jitter, mXOff = size * 0.02 * jitter;
+                    const yOff = (Math.random() * 2 - 1) * mYOff, xOff = (Math.random() * 2 - 1) * mXOff;
+                    const sv = size * (1 + (Math.random() * 0.1 - 0.05) * jitter);
+                    const rot = (Math.random() * 2 - 1) * 0.03 * jitter;
+                    const tiltYOffset = (x - lineStartX) * Math.tan(lineTiltRads);
+                    ctx.save();
+                    ctx.font = makeFont(sv, bold, italic, mono);
+                    ctx.fillStyle = currentFillStyle;
+                    ctx.translate(x + xOff, y + yOff + tiltYOffset);
+                    ctx.rotate(rot); ctx.scale(wScale, 1);
+                    ctx.fillText(ch, 0, 0);
+                    const gw = mainWeightRange ? parseInt(mainWeightRange.value) / 10 : 0;
+                    if (gw > 0 && ch.charCodeAt(0) <= 255) {
+                        ctx.lineWidth = gw;
+                        ctx.lineJoin = 'round';
+                        ctx.strokeStyle = currentFillStyle;
+                        ctx.strokeText(ch, 0, 0);
+                    }
+                    ctx.restore();
+                };
+
+                const mTok = (toks, size, bold, italic, mono) => {
+                    let w = 0;
+                    for (const t of toks) {
+                        if (t.t === 'text') {
+                            for (const c of t.v) {
+                                const isGreek = c.charCodeAt(0) > 255;
+                                ctx.font = makeFont(size, isGreek ? false : bold, isGreek ? false : italic, mono, isGreek);
+                                w += ctx.measureText(c).width * wScale;
+                            }
+                        }
+                        else if (t.t === 'frac') { w += Math.max(mTok(t.num, size * .7, bold, italic, mono), mTok(t.den, size * .7, bold, italic, mono)) + size * 0.4; }
+                        else if (t.t === 'sqrt') { w += size * 0.55 + mTok(t.inner, size, bold, italic, mono) + size * 0.15; }
+                        else if (t.t === 'sup') { w += mTok(t.exp, size * .6, bold, italic, mono); }
+                        else if (t.t === 'sub') { w += mTok(t.sub, size * .6, bold, italic, mono); }
+                    }
+                    return w;
+                };
+
+                const dTok = (toks, dx, dy, size, bold, italic, mono, lineStartX, lineTiltRads) => {
+                    let x = dx;
+                    for (const t of toks) {
+                        if (t.t === 'text') {
+                            const prepV = prepareText(t.v);
+                            const wWidth = mTok([{ t: 'text', v: prepV }], size, bold, italic, mono);
+                            clickBoxes.push({
+                                pageIdx: currentPageIdx,
+                                x, y: dy - size * 0.8 + (x - lineStartX) * Math.tan(lineTiltRads),
+                                w: wWidth, h: size * 1.2,
+                                text: prepV,
+                                rawText: t.v  // guardar texto original para búsqueda
+                            });
+                            for (const ch of prepV) {
+                                const isGreek = ch.charCodeAt(0) > 255;
+                                ctx.font = makeFont(size, isGreek ? false : bold, isGreek ? false : italic, mono, isGreek);
+                                const cw = ctx.measureText(ch).width, rw = cw * wScale;
+                                if (x + rw > maxX && x > ML) { x = ML; lineStartX = ML; dy += lineH; checkPage(); }
+                                const wY = Math.sin(x * 0.02) * fontSize * 0.04 * wobble;
+                                drawChar(ch, x, dy + wY, size, isGreek ? false : bold, isGreek ? false : italic, mono, lineStartX, lineTiltRads);
+                                x += rw;
+                            }
+                        } else if (t.t === 'frac') {
+                            const fs = size * .7, nW = mTok(t.num, fs, bold, italic, mono), dW = mTok(t.den, fs, bold, italic, mono);
+                            const fW = Math.max(nW, dW) + size * 0.3, pN = (fW - nW) / 2, pD = (fW - dW) / 2;
+                            dTok(t.num, x + pN, dy - size * 0.4, fs, bold, italic, mono, lineStartX, lineTiltRads);
+                            const tOff = (x - lineStartX) * Math.tan(lineTiltRads);
+                            ctx.save(); ctx.strokeStyle = currentFillStyle; ctx.lineWidth = Math.max(1.2, size * 0.04);  // ← color uniforme
+                            const lY = dy - size * 0.15 + tOff;
+                            ctx.beginPath(); ctx.moveTo(x + 2, lY);
+                            for (let s = 1; s <= 5; s++) { ctx.lineTo(x + 2 + (fW - 4) * (s / 5), lY + (Math.random() * 2 - 1) * size * 0.02 * jitter); }
+                            ctx.stroke(); ctx.restore();
+                            dTok(t.den, x + pD, dy + size * 0.35, fs, bold, italic, mono, lineStartX, lineTiltRads);
+                            x += fW;
+                        } else if (t.t === 'sqrt') {
+                            const iW = mTok(t.inner, size, bold, italic, mono), rW = size * 0.55, rP = size * 0.1, tW = rW + iW + rP;
+                            const tOff = (x - lineStartX) * Math.tan(lineTiltRads);
+                            const topY = dy - size * 0.85 + tOff, botY = dy + size * 0.1 + tOff, refY = dy + tOff;
+                            ctx.save(); ctx.strokeStyle = currentFillStyle; ctx.lineWidth = Math.max(1.5, size * 0.045);  // ← color uniforme
+                            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                            const jY = () => (Math.random() * 2 - 1) * size * 0.015 * jitter;
+                            ctx.beginPath();
+                            ctx.moveTo(x + size * 0.02, refY - size * 0.25 + jY());
+                            ctx.lineTo(x + size * 0.15 + jY(), refY - size * 0.15 + jY());
+                            ctx.lineTo(x + size * 0.3 + jY(), botY + jY());
+                            ctx.lineTo(x + rW + jY(), topY + jY());
+                            const reX = x + rW + iW + rP * 0.5;
+                            for (let s = 1; s <= 5; s++) { ctx.lineTo(x + rW + (iW + rP * 0.5) * (s / 5), topY + (Math.random() * 2 - 1) * size * 0.02 * jitter); }
+                            ctx.lineTo(reX, topY + size * 0.08 + jY());
+                            ctx.stroke(); ctx.restore();
+                            dTok(t.inner, x + rW, dy, size, bold, italic, mono, lineStartX, lineTiltRads);
+                            x += tW;
+                        } else if (t.t === 'sup') {
+                            const w = dTok(t.exp, x, dy - size * 0.35, size * 0.6, bold, italic, mono, lineStartX, lineTiltRads); x += w;
+                        } else if (t.t === 'sub') {
+                            const w = dTok(t.sub, x, dy + size * 0.25, size * 0.6, bold, italic, mono, lineStartX, lineTiltRads); x += w;
                         }
                     }
-                    else if (t.t==='frac') { w+=Math.max(mTok(t.num,size*.7,bold,italic,mono),mTok(t.den,size*.7,bold,italic,mono))+size*0.4; }
-                    else if (t.t==='sqrt') { w+=size*0.55+mTok(t.inner,size,bold,italic,mono)+size*0.15; }
-                    else if (t.t==='sup') { w+=mTok(t.exp,size*.6,bold,italic,mono); }
-                    else if (t.t==='sub') { w+=mTok(t.sub,size*.6,bold,italic,mono); }
-                }
-                return w;
-            };
+                    return x - dx;
+                };
 
-            const dTok = (toks, dx, dy, size, bold, italic, mono, lineStartX, lineTiltRads) => {
-                let x=dx;
-                for (const t of toks) {
-                    if (t.t==='text') {
-                        const prepV = prepareText(t.v);
-                        const wWidth=mTok([{t:'text',v:prepV}],size,bold,italic,mono);
-                        clickBoxes.push({
-                            pageIdx: currentPageIdx,
-                            x, y: dy-size*0.8+(x-lineStartX)*Math.tan(lineTiltRads),
-                            w: wWidth, h: size*1.2,
-                            text: prepV,
-                            rawText: t.v  // guardar texto original para búsqueda
-                        });
-                        for (const ch of prepV) {
-                            const isGreek = ch.charCodeAt(0) > 255;
-                            ctx.font=makeFont(size, isGreek ? false : bold, isGreek ? false : italic, mono, isGreek);
-                            const cw=ctx.measureText(ch).width, rw=cw*wScale;
-                            if (x+rw>maxX && x>ML) { x=ML; lineStartX=ML; dy+=lineH; checkPage(); }
-                            const wY=Math.sin(x*0.02)*fontSize*0.04*wobble;
-                            drawChar(ch, x, dy+wY, size, isGreek ? false : bold, isGreek ? false : italic, mono, lineStartX, lineTiltRads);
-                            x+=rw;
-                        }
-                    } else if (t.t==='frac') {
-                        const fs=size*.7, nW=mTok(t.num,fs,bold,italic,mono), dW=mTok(t.den,fs,bold,italic,mono);
-                        const fW=Math.max(nW,dW)+size*0.3, pN=(fW-nW)/2, pD=(fW-dW)/2;
-                        dTok(t.num, x+pN, dy-size*0.4, fs, bold, italic, mono, lineStartX, lineTiltRads);
-                        const tOff=(x-lineStartX)*Math.tan(lineTiltRads);
-                        ctx.save(); ctx.strokeStyle=currentFillStyle; ctx.lineWidth=Math.max(1.2,size*0.04);  // ← color uniforme
-                        const lY=dy-size*0.15+tOff;
-                        ctx.beginPath(); ctx.moveTo(x+2,lY);
-                        for(let s=1;s<=5;s++){ctx.lineTo(x+2+(fW-4)*(s/5),lY+(Math.random()*2-1)*size*0.02*jitter);}
-                        ctx.stroke(); ctx.restore();
-                        dTok(t.den, x+pD, dy+size*0.35, fs, bold, italic, mono, lineStartX, lineTiltRads);
-                        x+=fW;
-                    } else if (t.t==='sqrt') {
-                        const iW=mTok(t.inner,size,bold,italic,mono), rW=size*0.55, rP=size*0.1, tW=rW+iW+rP;
-                        const tOff=(x-lineStartX)*Math.tan(lineTiltRads);
-                        const topY=dy-size*0.85+tOff, botY=dy+size*0.1+tOff, refY=dy+tOff;
-                        ctx.save(); ctx.strokeStyle=currentFillStyle; ctx.lineWidth=Math.max(1.5,size*0.045);  // ← color uniforme
-                        ctx.lineCap='round'; ctx.lineJoin='round';
-                        const jY=()=>(Math.random()*2-1)*size*0.015*jitter;
+                const renderLine = (content, size, bold, italic, mono, indent, underline) => {
+                    const prepContent = currentMode === 'latex' ? content : content; // ya procesado
+                    const tokens = tokenize(prepContent);
+                    const words = []; let cur = [];
+                    for (const tok of tokens) {
+                        if (tok.t === 'text' && tok.v.includes(' ')) {
+                            const parts = tok.v.split(/( +)/);
+                            for (const p of parts) {
+                                if (/^ +$/.test(p)) {
+                                    if (cur.length) words.push(cur); cur = [];
+                                    words.push({ isSpace: true, width: p.length * ctx.measureText(' ').width * wScale });
+                                } else if (p) cur.push({ t: 'text', v: p });
+                            }
+                        } else { cur.push(tok); }
+                    }
+                    if (cur.length) words.push(cur);
+
+                    curX = Math.max(curX, ML + indent);
+                    let startX = curX;
+                    const maxRadians = 0.05 * tiltFactor;
+                    const lineTilt = (Math.random() * 2 - 1) * maxRadians;
+
+                    for (const w of words) {
+                        if (w.isSpace) { curX += w.width; continue; }
+                        const wW = mTok(w, size, bold, italic, mono);
+                        if (curX + wW > maxX && curX > ML + indent) { curX = ML + indent; startX = curX; curY += lineH; checkPage(); }
+                        const drawn = dTok(w, curX, curY, size, bold, italic, mono, startX, lineTilt);
+                        curX += drawn;
+                    }
+
+                    if (underline) {
+                        ctx.save();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = Math.max(1.2, size * 0.04);
+                        ctx.lineCap = 'round';
                         ctx.beginPath();
-                        ctx.moveTo(x+size*0.02, refY-size*0.25+jY());
-                        ctx.lineTo(x+size*0.15+jY(), refY-size*0.15+jY());
-                        ctx.lineTo(x+size*0.3+jY(), botY+jY());
-                        ctx.lineTo(x+rW+jY(), topY+jY());
-                        const reX=x+rW+iW+rP*0.5;
-                        for(let s=1;s<=5;s++){ctx.lineTo(x+rW+(iW+rP*0.5)*(s/5),topY+(Math.random()*2-1)*size*0.02*jitter);}
-                        ctx.lineTo(reX, topY+size*0.08+jY());
-                        ctx.stroke(); ctx.restore();
-                        dTok(t.inner, x+rW, dy, size, bold, italic, mono, lineStartX, lineTiltRads);
-                        x+=tW;
-                    } else if (t.t==='sup') {
-                        const w=dTok(t.exp, x, dy-size*0.35, size*0.6, bold, italic, mono, lineStartX, lineTiltRads); x+=w;
-                    } else if (t.t==='sub') {
-                        const w=dTok(t.sub, x, dy+size*0.25, size*0.6, bold, italic, mono, lineStartX, lineTiltRads); x+=w;
-                    }
-                }
-                return x-dx;
-            };
-
-            const renderLine = (content, size, bold, italic, mono, indent, underline) => {
-                const prepContent = currentMode === 'latex' ? content : content; // ya procesado
-                const tokens = tokenize(prepContent);
-                const words=[]; let cur=[];
-                for (const tok of tokens) {
-                    if (tok.t==='text' && tok.v.includes(' ')) {
-                        const parts=tok.v.split(/( +)/);
-                        for (const p of parts) {
-                            if (/^ +$/.test(p)) {
-                                if(cur.length) words.push(cur); cur=[];
-                                words.push({isSpace:true, width:p.length*ctx.measureText(' ').width*wScale});
-                            } else if (p) cur.push({t:'text',v:p});
+                        const uY = curY + size * 0.18;
+                        const uSteps = Math.max(2, Math.ceil((curX - startX) / 8));
+                        ctx.moveTo(startX, uY);
+                        for (let s = 1; s <= uSteps; s++) {
+                            const px = startX + (curX - startX) * (s / uSteps);
+                            const py = uY + (px - startX) * Math.tan(lineTilt) + (Math.random() * 2 - 1) * size * 0.04 * jitter;
+                            ctx.lineTo(px, py);
                         }
-                    } else { cur.push(tok); }
-                }
-                if (cur.length) words.push(cur);
-
-                curX=Math.max(curX, ML+indent);
-                let startX=curX;
-                const maxRadians=0.05*tiltFactor;
-                const lineTilt=(Math.random()*2-1)*maxRadians;
-
-                for (const w of words) {
-                    if (w.isSpace) { curX+=w.width; continue; }
-                    const wW=mTok(w,size,bold,italic,mono);
-                    if (curX+wW>maxX && curX>ML+indent) { curX=ML+indent; startX=curX; curY+=lineH; checkPage(); }
-                    const drawn=dTok(w, curX, curY, size, bold, italic, mono, startX, lineTilt);
-                    curX+=drawn;
-                }
-
-                if (underline) {
-                    ctx.save();
-                    ctx.strokeStyle=color;
-                    ctx.lineWidth=Math.max(1.2, size*0.04);
-                    ctx.lineCap='round';
-                    ctx.beginPath();
-                    const uY = curY + size*0.18;
-                    const uSteps = Math.max(2, Math.ceil((curX-startX)/8));
-                    ctx.moveTo(startX, uY);
-                    for(let s=1; s<=uSteps; s++){
-                        const px = startX + (curX-startX)*(s/uSteps);
-                        const py = uY + (px-startX)*Math.tan(lineTilt) + (Math.random()*2-1)*size*0.04*jitter;
-                        ctx.lineTo(px, py);
+                        ctx.stroke(); ctx.restore();
                     }
-                    ctx.stroke(); ctx.restore();
-                }
-            };
+                };
 
-            // ===== LOOP DE BLOQUES =====
-            for (let bi=0; bi<blocks.length; bi++) {
-                const block=blocks[bi];
-                const nextBlock=blocks[bi+1];
+                // ===== LOOP DE BLOQUES =====
+                for (let bi = 0; bi < blocks.length; bi++) {
+                    const block = blocks[bi];
+                    const nextBlock = blocks[bi + 1];
 
-                if (block.type==='vs') {
-                    // Si es un newline de fin de línea Markdown
-                    if (block.newline) { curX=ML; curY+=lineH; checkPage(); continue; }
-                    curY+=block.h||10; checkPage(); continue;
-                }
-                // Separador de línea: solo resetea curX sin avanzar curY
-                // (el último bloque inline de la línea ya avanza curY solo)
-                if (block.type==='nl') { curX=ML; checkPage(); continue; }
-                if (block.type==='rule') {
-                    ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.globalAlpha=0.5;  // ← color uniforme
-                    ctx.beginPath(); const rY=curY-fontSize*0.3; ctx.moveTo(ML,rY);
-                    for(let s=1;s<=10;s++){ctx.lineTo(ML+(maxX-ML)*(s/10),rY+(Math.random()*2-1)*jitter*2);}
-                    ctx.stroke(); ctx.restore(); curY+=lineH*0.5; checkPage(); continue;
-                }
-                if (block.type==='pagebreak') {
-                    // Forzar nueva página
-                    page=createPage(); ctx=page.ctx; currentPageIdx=pageIndex-1;
-                    curX=ML; curY=MT+fontSize; continue;
-                }
-
-                const scale=block.scale||1.0;
-                const bSize=Math.round(fontSize*scale);
-                const bBold=!!block.bold, bItalic=!!block.italic, bUnderline=!!block.underline, bMono=!!block.mono;
-                const indent=block.type==='math'?mathIndent:0;
-                const centered=!!block.centered;
-                const content=block.content||'';
-                const isInline=!!block.inline;
-                const prevWasInline=bi>0 && blocks[bi-1] && !!blocks[bi-1].inline;
-                const nextIsInline=nextBlock && !!nextBlock.inline;
-
-                if (!isInline || !prevWasInline) curX=ML;
-
-                if (block.type==='boxed') {
-                    // Renderizar como texto normal + subrayado con imperfección (sin caja)
-                    const tokens=tokenize(content);
-                    const startX=curX;
-                    const lineTilt=(Math.random()*2-1)*0.05*tiltFactor;
-                    const drawn=dTok(tokens, curX, curY, bSize, bBold, bItalic, bMono, startX, lineTilt);
-                    const endX=curX+drawn;
-                    // Subrayado con jitter siguiendo la inclinación de la línea
-                    ctx.save();
-                    ctx.strokeStyle=color;
-                    ctx.lineWidth=Math.max(1.2, bSize*0.04);
-                    ctx.lineCap='round';
-                    ctx.beginPath();
-                    const uY=curY+bSize*0.18;
-                    const steps=Math.ceil((endX-startX)/8);
-                    ctx.moveTo(startX, uY+(startX-startX)*Math.tan(lineTilt));
-                    for(let s=1;s<=steps;s++){
-                        const px=startX+(endX-startX)*(s/steps);
-                        const py=uY+(px-startX)*Math.tan(lineTilt)+(Math.random()*2-1)*bSize*0.04*jitter;
-                        ctx.lineTo(px,py);
+                    if (block.type === 'vs') {
+                        // Si es un newline de fin de línea Markdown
+                        if (block.newline) { curX = ML; curY += lineH; checkPage(); continue; }
+                        curY += block.h || 10; checkPage(); continue;
                     }
-                    ctx.stroke(); ctx.restore();
-                    curX=endX+bSize*0.15;
-                    if (!nextIsInline) { curX=ML; curY+=lineH; }
-                } else if (block.type==='subsec') {
-                    // Subsección: sangría a la derecha, en una sola línea, sin negrita
-                    const ssIndent = block.ssecIndent || 40;
-                    curX = ML + ssIndent;
-                    const startX = curX;
-                    const lineTilt = (Math.random()*2-1)*0.02*tiltFactor;
-                    const tokens = tokenize(content);
-                    dTok(tokens, curX, curY, bSize, false, bItalic, bMono, startX, lineTilt);
-                    curX=ML; curY+=lineH*(scale>1.1?scale*0.75:1.0);
-                } else if (centered) {
-                    const tokens=tokenize(content);
-                    const totalW=mTok(tokens,bSize,bBold,bItalic,bMono);
-                    curX=Math.max(ML,(PW-totalW)/2);
-                    dTok(tokens, curX, curY, bSize, bBold, bItalic, bMono, curX, (Math.random()*2-1)*0.02*tiltFactor);
-                    curX=ML; curY+=lineH*scale;
-                } else {
-                    renderLine(content, bSize, bBold, bItalic, bMono, indent, bUnderline);
-                    if (!isInline || !nextIsInline) {
-                        curX=ML; curY+=lineH*(scale>1.1?scale*0.8:1.0);
+                    // Separador de línea: solo resetea curX sin avanzar curY
+                    // (el último bloque inline de la línea ya avanza curY solo)
+                    if (block.type === 'nl') { curX = ML; checkPage(); continue; }
+                    if (block.type === 'rule') {
+                        ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.5;  // ← color uniforme
+                        ctx.beginPath(); const rY = curY - fontSize * 0.3; ctx.moveTo(ML, rY);
+                        for (let s = 1; s <= 10; s++) { ctx.lineTo(ML + (maxX - ML) * (s / 10), rY + (Math.random() * 2 - 1) * jitter * 2); }
+                        ctx.stroke(); ctx.restore(); curY += lineH * 0.5; checkPage(); continue;
                     }
+                    if (block.type === 'pagebreak') {
+                        // Forzar nueva página
+                        page = createPage(); ctx = page.ctx; currentPageIdx = pageIndex - 1;
+                        curX = ML; curY = MT + fontSize; continue;
+                    }
+
+                    const scale = block.scale || 1.0;
+                    const bSize = Math.round(fontSize * scale);
+                    const bBold = !!block.bold, bItalic = !!block.italic, bUnderline = !!block.underline, bMono = !!block.mono;
+                    const indent = block.type === 'math' ? mathIndent : 0;
+                    const centered = !!block.centered;
+                    const content = block.content || '';
+                    const isInline = !!block.inline;
+                    const prevWasInline = bi > 0 && blocks[bi - 1] && !!blocks[bi - 1].inline;
+                    const nextIsInline = nextBlock && !!nextBlock.inline;
+
+                    if (!isInline || !prevWasInline) curX = ML;
+
+                    if (block.type === 'boxed') {
+                        // Renderizar como texto normal + subrayado con imperfección (sin caja)
+                        const tokens = tokenize(content);
+                        const startX = curX;
+                        const lineTilt = (Math.random() * 2 - 1) * 0.05 * tiltFactor;
+                        const drawn = dTok(tokens, curX, curY, bSize, bBold, bItalic, bMono, startX, lineTilt);
+                        const endX = curX + drawn;
+                        // Subrayado con jitter siguiendo la inclinación de la línea
+                        ctx.save();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = Math.max(1.2, bSize * 0.04);
+                        ctx.lineCap = 'round';
+                        ctx.beginPath();
+                        const uY = curY + bSize * 0.18;
+                        const steps = Math.ceil((endX - startX) / 8);
+                        ctx.moveTo(startX, uY + (startX - startX) * Math.tan(lineTilt));
+                        for (let s = 1; s <= steps; s++) {
+                            const px = startX + (endX - startX) * (s / steps);
+                            const py = uY + (px - startX) * Math.tan(lineTilt) + (Math.random() * 2 - 1) * bSize * 0.04 * jitter;
+                            ctx.lineTo(px, py);
+                        }
+                        ctx.stroke(); ctx.restore();
+                        curX = endX + bSize * 0.15;
+                        if (!nextIsInline) { curX = ML; curY += lineH; }
+                    } else if (block.type === 'subsec') {
+                        // Subsección: sangría a la derecha, en una sola línea, sin negrita
+                        const ssIndent = block.ssecIndent || 40;
+                        curX = ML + ssIndent;
+                        const startX = curX;
+                        const lineTilt = (Math.random() * 2 - 1) * 0.02 * tiltFactor;
+                        const tokens = tokenize(content);
+                        dTok(tokens, curX, curY, bSize, false, bItalic, bMono, startX, lineTilt);
+                        curX = ML; curY += lineH * (scale > 1.1 ? scale * 0.75 : 1.0);
+                    } else if (centered) {
+                        const tokens = tokenize(content);
+                        const totalW = mTok(tokens, bSize, bBold, bItalic, bMono);
+                        curX = Math.max(ML, (PW - totalW) / 2);
+                        dTok(tokens, curX, curY, bSize, bBold, bItalic, bMono, curX, (Math.random() * 2 - 1) * 0.02 * tiltFactor);
+                        curX = ML; curY += lineH * scale;
+                    } else {
+                        renderLine(content, bSize, bBold, bItalic, bMono, indent, bUnderline);
+                        if (!isInline || !nextIsInline) {
+                            curX = ML; curY += lineH * (scale > 1.1 ? scale * 0.8 : 1.0);
+                        }
+                    }
+                    checkPage();
                 }
-                checkPage();
+
+                // ===== DECORACIONES (Encabezados y Números) =====
+                const hdr = headerText.value.trim(), num = pageNumbers.checked;
+                const hdrLines = hdr ? hdr.split('\n') : [];
+                activePages.forEach((ctxItem, index) => {
+                    ctx = ctxItem; // Rebind para que dTok dibuje en esta página
+                    if (hdrLines.length > 0) {
+                        let hy = MT / 2 - (hdrLines.length - 1) * (lineH * 0.7);
+                        for (const hLine of hdrLines) {
+                            const tokens = tokenize(hLine);
+                            const totalW = mTok(tokens, fontSize, false, false, false);
+                            dTok(tokens, PW - MR - totalW, hy, fontSize, false, false, false, PW - MR - totalW, 0);
+                            hy += lineH;
+                        }
+                    }
+                    if (num) {
+                        const numStr = `- ${index + 1} -`;
+                        const tokens = tokenize(numStr);
+                        const totalW = mTok(tokens, fontSize, false, false, false);
+                        dTok(tokens, PW - MR - totalW, PH - (MB / 2) + 15, fontSize, false, false, false, PW - MR - totalW, 0);
+                    }
+                });
+
+                setupClickHandlers();
             }
 
-            // ===== DECORACIONES (Encabezados y Números) =====
-            const hdr=headerText.value.trim(), num=pageNumbers.checked;
-            activePages.forEach((ctxItem, index) => {
-                ctxItem.fillStyle=color;  // ← SIEMPRE el color del selector
-                ctxItem.font=`14px ${fontFamily}`;
-                if (hdr) {
-                    ctxItem.textAlign='right';
-                    ctxItem.globalAlpha=0.8;
-                    ctxItem.fillText(hdr, PW-MR, MT/2+10);
-                }
-                if (num) {
-                    ctxItem.textAlign='center';
-                    ctxItem.globalAlpha=0.9;
-                    ctxItem.fillText(`- ${index+1} -`, PW/2, PH-(MB/2)+15);
-                }
-                ctxItem.globalAlpha=1.0;
-                ctxItem.textAlign='left';
-            });
-
-            setupClickHandlers();
-        }
-
-        // ===== RENDER INICIAL =====
-        document.fonts.ready.then(() => {
-            if (!textInput.value.trim()) {
-                textInput.value = `\\section{Física I - Teoría}
+            // ===== RENDER INICIAL =====
+            document.fonts.ready.then(() => {
+                if (!textInput.value.trim()) {
+                    textInput.value = `\\section{Física I - Teoría}
 \\textbf{Tema:} Dinámica de fluidos
 \\rule{0}{0}
 
@@ -1347,28 +1534,29 @@ Se observó una deformación:
 
 Y la raíz de la función:
 x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}`;
-            }
-            executeRender();
-        });
+                }
+                executeRender();
+            });
 
-        // ===== EXPORTAR PDF =====
-        exportBtn.addEventListener('click', () => {
-            const orig=exportBtn.innerHTML;
-            exportBtn.innerHTML='Generando...'; exportBtn.disabled=true;
-            setTimeout(() => {
-                try {
-                    const {jsPDF}=window.jspdf;
-                    const pdf=new jsPDF('p','pt',[PW,PH]);
-                    document.querySelectorAll('.page-container').forEach((c,i) => {
-                        if(i>0) pdf.addPage();
-                        pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,PW,PH);
-                    });
-                    pdf.save('Documento_Manuscrito.pdf');
-                } catch(e) { alert('Error PDF'); console.error(e); }
-                finally { exportBtn.innerHTML=orig; exportBtn.disabled=false; }
-            }, 100);
+            // ===== EXPORTAR PDF =====
+            exportBtn.addEventListener('click', () => {
+                const orig = exportBtn.innerHTML;
+                exportBtn.innerHTML = 'Generando...'; exportBtn.disabled = true;
+                setTimeout(() => {
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF('p', 'pt', [PW, PH]);
+                        document.querySelectorAll('.page-container').forEach((c, i) => {
+                            if (i > 0) pdf.addPage();
+                            pdf.addImage(c.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, PW, PH);
+                        });
+                        pdf.save('Documento_Manuscrito.pdf');
+                    } catch (e) { alert('Error PDF'); console.error(e); }
+                    finally { exportBtn.innerHTML = orig; exportBtn.disabled = false; }
+                }, 100);
+            });
         });
-    });
     </script>
 </body>
+
 </html>
