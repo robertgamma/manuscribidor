@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura del Manuscribidor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased p-6 md:p-12 selection:bg-indigo-200 selection:text-indigo-900">
+
+    <main class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <h1
+                class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4 drop-shadow-sm">
+                Arquitectura del Manuscribidor
+            </h1>
+            <p class="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
+                Disección paso a paso del motor de renderizado: desde el parsing matemático hasta las 5 capas de
+                humanización biomecánica.
+            </p>
+        </header>
+
+        <!-- Macro Flow -->
+        <section
+            class="glass-panel rounded-2xl shadow-xl p-8 mb-10 transition-transform duration-300 hover:-translate-y-1">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                        </path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Flujo de Trabajo a Nivel Macro</h2>
+            </div>
+            <ol class="space-y-4 text-slate-600 list-decimal list-inside ml-2">
+                <li><strong class="text-indigo-700">Lectura de Entrada:</strong> Toma el texto ingresado en el
+                    <code>&lt;textarea&gt;</code> y las opciones de la interfaz.</li>
+                <li><strong class="text-indigo-700">Procesamiento (Parsing):</strong> Traduce comandos LaTeX/Markdown a
+                    un formato estructural.</li>
+                <li><strong class="text-indigo-700">Paginación y Canvas:</strong> Prepara objetos canvas de HTML5 y
+                    dibuja el fondo texturizado.</li>
+                <li><strong class="text-indigo-700">Cálculo de Layout:</strong> Mide anchos (<code>mTok</code>) para
+                    definir saltos de línea y página exactos.</li>
+                <li><strong class="text-indigo-700">Renderizado Letra por Letra:</strong> Dibuja en pantalla inyectando
+                    caos controlado (Las 5 Capas).</li>
+                <li><strong class="text-indigo-700">Exportación:</strong> Une todos los canvas en un archivo PDF
+                    unificado mediante <code>jsPDF</code>.</li>
+            </ol>
+        </section>
+
+        <!-- Pipeline Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <!-- Parsing -->
+            <section
+                class="glass-panel rounded-2xl shadow-xl p-8 transition-transform duration-300 hover:-translate-y-1 border-t-4 border-t-blue-400">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="text-blue-500">1.</span> Parsing y Análisis
+                </h3>
+                <p class="text-slate-600 mb-4 text-sm leading-relaxed">
+                    El sistema utiliza expresiones regulares para aislar <strong>Bloques</strong> (títulos, párrafos).
+                    Luego, la función <code>tokenize()</code> descompone el texto de cada bloque construyendo un árbol
+                    JSON recursivo.
+                </p>
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-green-400 overflow-x-auto shadow-inner">
+                    // Ejemplo para \frac{F}{A}
+                    [
+                    { "t": "frac",
+                    "num": [{ "t": "text", "v": "F" }],
+                    "den": [{ "t": "text", "v": "A" }]
+                    }
+                    ]
+                </div>
+            </section>
+
+            <!-- Render Engine -->
+            <section
+                class="glass-panel rounded-2xl shadow-xl p-8 transition-transform duration-300 hover:-translate-y-1 border-t-4 border-t-purple-400">
+                <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="text-purple-500">2.</span> Motor de Renderizado
+                </h3>
+                <ul class="space-y-4 text-sm text-slate-600">
+                    <li><strong class="text-slate-800 block mb-1">El Arquitecto (<code>renderLine</code>)</strong>
+                        Vigila los márgenes. Llama a <code>mTok()</code> para simular el espacio. Si una palabra va a
+                        chocar contra el borde, fuerza un salto de línea de antemano.
+                    </li>
+                    <li><strong class="text-slate-800 block mb-1">El Ingeniero (<code>dTok</code>)</strong>
+                        Usa las coordenadas X,Y para armar el rompecabezas de las ecuaciones matemáticas. Traza las
+                        divisiones irregulares de las fracciones.
+                    </li>
+                    <li><strong class="text-slate-800 block mb-1">El Artista (<code>drawChar</code>)</strong>
+                        La función de más bajo nivel. Llama a <code>ctx.fillText()</code> para cada carácter.
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Las 5 Capas -->
+        <section
+            class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl shadow-2xl p-8 md:p-12 mb-12 text-white relative overflow-hidden">
+            <!-- Decorative circle -->
+            <div
+                class="absolute -top-24 -right-24 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse">
+            </div>
+
+            <h2 class="text-3xl font-extrabold mb-8 relative z-10 flex items-center gap-3">
+                <span class="text-4xl">🖋️</span> Las 5 Capas de Humanización
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+                <!-- Layer 1 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+                    <h4 class="font-bold text-indigo-300 mb-2 flex justify-between">
+                        <span>1. Activos Biológicos</span> <span
+                            class="text-xs bg-indigo-500/30 px-2 py-1 rounded text-white">drawBg / drawChar</span>
+                    </h4>
+                    <p class="text-sm text-slate-300">Generación de papel procedural crema con ruido, fibras y manchas
+                        de suciedad. Micro-variaciones multiplicativas de ±3% en el tamaño y ±4% en el ancho de cada
+                        glifo individual.</p>
+                </div>
+
+                <!-- Layer 2 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+                    <h4 class="font-bold text-indigo-300 mb-2 flex justify-between">
+                        <span>2. Física de Tinta</span> <span
+                            class="text-xs bg-amber-500/30 px-2 py-1 rounded text-white">globalComposite</span>
+                    </h4>
+                    <p class="text-sm text-slate-300">Conversión de la tinta sólida a <code
+                            class="bg-black/30 px-1 rounded text-amber-300">rgba(r,g,b, 0.75)</code>. Activación del
+                        modo de fusión <code>multiply</code> para que los trazos reaccionen fotoquímicamente con la
+                        textura del fondo.</p>
+                </div>
+
+                <!-- Layer 3 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+                    <h4 class="font-bold text-indigo-300 mb-2 flex justify-between">
+                        <span>3. Micro-Geometría</span> <span
+                            class="text-xs bg-rose-500/30 px-2 py-1 rounded text-white">ctx.rotate</span>
+                    </h4>
+                    <p class="text-sm text-slate-300">Inyección de caos: Micro-rotación de ±0.015 radianes en cada
+                        carácter (inclinación inestable) junto con un ruido en el eje Y de ±1.5px rompiendo la
+                        perfección horizontal.</p>
+                </div>
+
+                <!-- Layer 4 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20">
+                    <h4 class="font-bold text-indigo-300 mb-2 flex justify-between">
+                        <span>4. Kerning Dinámico</span> <span
+                            class="text-xs bg-emerald-500/30 px-2 py-1 rounded text-white">measureText</span>
+                    </h4>
+                    <p class="text-sm text-slate-300">Avance irregular en el eje X de 0.2px a 1px forzando una
+                        separación biológica entre letras sin generar superposiciones de cajas delimitadoras en
+                        subíndices.</p>
+                </div>
+
+                <!-- Layer 5 -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20 sm:col-span-2">
+                    <h4 class="font-bold text-indigo-300 mb-2 flex justify-between">
+                        <span>5. Macroscopía y Error</span> <span
+                            class="text-xs bg-blue-500/30 px-2 py-1 rounded text-white">Deriva X/Y</span>
+                    </h4>
+                    <p class="text-sm text-slate-300">
+                        <strong>Deriva de la línea base:</strong> A medida que se avanza en X, un coeficiente empuja
+                        sutilmente hacia abajo el trazo simulando cansancio de muñeca. <br />
+                        <strong>Tachones:</strong> 1% de probabilidad de generar un evento de error tipográfico donde el
+                        motor intercambia letras (scramble), las tacha con trazos irregulares sobre-puestos, y luego
+                        reescribe.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-sm text-slate-400 mt-12 pb-8">
+            <p>Generado dinámicamente. El documento HTML tiene diseño <i>responsive</i> y <i>glassmorphism</i> usando
+                Tailwind CSS.</p>
+        </footer>
+    </main>
+
+</body>
+
+</html>
